@@ -62,9 +62,8 @@ export default function StatsSection() {
             <div className="relative z-10 max-w-6xl mx-auto px-6">
                 {/* Badge */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
                     animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-                    transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                    transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
                     className="text-center mb-8"
                 >
                     <span
@@ -81,9 +80,8 @@ export default function StatsSection() {
 
                 <motion.div
                     ref={ref}
-                    initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
                     animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-                    transition={{ duration: 0.6, delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
+                    transition={{ duration: 1.0, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4">
@@ -96,17 +94,16 @@ export default function StatsSection() {
 
                 {/* Stats Grid */}
                 <motion.div
-                    initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
                     animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-                    transition={{ duration: 0.6, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
+                    transition={{ duration: 1.0, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
                     className="grid grid-cols-2 lg:grid-cols-4 gap-8"
                 >
                     {stats.map((stat, index) => (
                         <motion.div
                             key={stat.label}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                            transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                            initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
+                            animate={isInView ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : {}}
+                            transition={{ duration: 0.8, delay: 0.6 + index * 0.3 }}
                             className="text-center group"
                         >
                             <div className="relative inline-block">
