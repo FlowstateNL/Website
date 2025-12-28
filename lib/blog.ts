@@ -62,6 +62,10 @@ export function getAllPosts(): BlogPost[] {
     });
 }
 
+import { visit } from 'unist-util-visit';
+
+// ... imports
+
 export async function getPostData(slug: string): Promise<BlogPost> {
     const fullPath = path.join(postsDirectory, `${slug}.md`);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -69,22 +73,38 @@ export async function getPostData(slug: string): Promise<BlogPost> {
     // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
 
+    const toc: { id: string; text: string }[] = [];
+
+    // Custom plugin to extract TOC from HAST
+    const extractToc = () => {
+        return (tree: any) => {
+            visit(tree, 'element', (node: any) => {
+                if (node.tagName === 'h2' && node.properties && node.properties.id) {
+                    // Get text content recursively
+                    const getText = (n: any): string => {
+                        if (n.type === 'text') return n.value;
+                        if (n.children) return n.children.map(getText).join('');
+                        return '';
+                    };
+
+                    toc.push({
+                        id: node.properties.id,
+                        text: getText(node)
+                    });
+                }
+            });
+        };
+    };
+
     // Use unified/remark/rehype to convert markdown into HTML with IDs
     const processedContent = await unified()
         .use(remarkParse)
         .use(remarkRehype)
         .use(rehypeSlug)
+        .use(extractToc) // Capture TOC after IDs are assigned
         .use(rehypeStringify)
         .process(matterResult.content);
     const contentHtml = processedContent.toString();
-
-    // Extract H2 headings reliably from the generated HTML
-    const toc: { id: string; text: string }[] = [];
-    const h2Regex = /<h2[^>]*id=["']([^"']+)["'][^>]*>(.*?)<\/h2>/g;
-    let match;
-    while ((match = h2Regex.exec(contentHtml)) !== null) {
-        toc.push({ id: match[1], text: match[2] });
-    }
 
     // Combine the data with the slug and contentHtml
     return {
