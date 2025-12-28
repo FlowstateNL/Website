@@ -74,11 +74,11 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="max-w-7xl mx-auto px-4"
+            className="max-w-6xl mx-auto px-4"
         >
-            <div className="flex flex-col lg:flex-row justify-center gap-12 items-start">
+            <div className="flex flex-col lg:flex-row justify-center gap-8 items-start">
                 {/* Main Content */}
-                <div className="w-full lg:max-w-[750px]">
+                <div className="w-full lg:max-w-[720px]">
                     <motion.div variants={itemVariants}>
                         <Link
                             href="/blog"
