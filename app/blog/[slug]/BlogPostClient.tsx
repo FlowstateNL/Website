@@ -1,8 +1,8 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface BlogPostClientProps {
     post: {
@@ -12,6 +12,7 @@ interface BlogPostClientProps {
         contentHtml?: string;
         excerpt: string;
         toc?: { id: string; text: string }[];
+        blocks?: { id: string | null; content: string }[];
     };
     relatedPosts: {
         slug: string;
@@ -25,59 +26,64 @@ interface BlogPostClientProps {
 
 const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.2,
-        },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
-    hidden: {
-        opacity: 0,
-        y: 20,
-        filter: 'blur(10px)',
-    },
+    hidden: { opacity: 0, y: 20, filter: 'blur(10px)' },
     visible: {
         opacity: 1,
         y: 0,
         filter: 'blur(0px)',
-        transition: {
-            duration: 0.8,
-            ease: [0.23, 1, 0.32, 1] as const,
-        },
+        transition: { duration: 0.8, ease: [0.23, 1, 0.32, 1] as const }
     },
+};
+
+// Sub-component for each section to handle individual visibility and animation
+const SectionBlock = ({
+    id,
+    content,
+    onActive
+}: {
+    id: string | null,
+    content: string,
+    onActive: (id: string) => void
+}) => {
+    const ref = useRef(null);
+    // Determine when this section is "active" for reading
+    // margin: "-10% 0px -50% 0px" means it activates when the top passes 10% down and stays until bottom passes 50% up
+    const isInView = useInView(ref, { margin: "-10% 0px -50% 0px", amount: 0.2 });
+
+    useEffect(() => {
+        if (isInView && id) {
+            onActive(id);
+        }
+    }, [isInView, id, onActive]);
+
+    return (
+        <motion.div
+            ref={ref}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }} // Trigger animation slightly before element enters
+            variants={itemVariants}
+            className="prose prose-invert prose-lg max-w-none 
+                prose-headings:text-white prose-headings:font-bold
+                prose-p:text-gray-300 prose-p:leading-relaxed
+                prose-li:text-gray-300
+                prose-strong:text-purple-300
+                prose-a:text-purple-400 hover:prose-a:text-purple-300 transition-colors
+                prose-img:rounded-3xl prose-img:border prose-img:border-white/10
+                prose-hr:border-white/10"
+            dangerouslySetInnerHTML={{ __html: content }}
+        />
+    );
 };
 
 export default function BlogPostClient({ post, relatedPosts }: BlogPostClientProps) {
     const [activeId, setActiveId] = useState<string>('');
     const toc = post.toc || [];
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setActiveId(entry.target.id);
-                    }
-                });
-            },
-            {
-                // Detect headings when they enter the top 40% of the viewport
-                rootMargin: '0px 0px -60% 0px',
-                threshold: 0.5
-            }
-        );
-
-        const headings = document.querySelectorAll('h2');
-        headings.forEach((heading) => observer.observe(heading));
-
-        return () => {
-            headings.forEach((heading) => observer.unobserve(heading));
-        };
-    }, []);
+    const blocks = post.blocks || (post.contentHtml ? [{ id: null, content: post.contentHtml }] : []);
 
     return (
         <motion.div
@@ -88,7 +94,7 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
         >
             <div className="flex flex-col lg:flex-row justify-center gap-8 items-start">
                 {/* Main Content */}
-                <div className="w-full lg:max-w-[720px]">
+                <div className="w-full lg:max-w-[720px] pb-32">
                     <motion.div variants={itemVariants}>
                         <Link
                             href="/blog"
@@ -109,19 +115,17 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                         </h1>
                     </motion.div>
 
-                    {/* Blog content rendered from Markdown */}
-                    <motion.div
-                        variants={itemVariants}
-                        className="prose prose-invert prose-lg max-w-none 
-                    prose-headings:text-white prose-headings:font-bold
-                    prose-p:text-gray-300 prose-p:leading-relaxed
-                    prose-li:text-gray-300
-                    prose-strong:text-purple-300
-                    prose-a:text-purple-400 hover:prose-a:text-purple-300 transition-colors
-                    prose-img:rounded-3xl prose-img:border prose-img:border-white/10
-                    prose-hr:border-white/10"
-                        dangerouslySetInnerHTML={{ __html: post.contentHtml || '' }}
-                    />
+                    {/* Blog content rendered block by block */}
+                    <div className="space-y-12">
+                        {blocks.map((block, index) => (
+                            <SectionBlock
+                                key={index}
+                                id={block.id}
+                                content={block.content}
+                                onActive={setActiveId}
+                            />
+                        ))}
+                    </div>
 
                     <motion.div variants={itemVariants} className="mt-20 pt-10 border-t border-white/10">
                         <div className="bg-white/5 rounded-3xl p-8 border border-white/10 text-center shadow-2xl shadow-purple-500/5">

@@ -8,6 +8,7 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
 import { visit } from 'unist-util-visit';
+import * as cheerio from 'cheerio';
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
@@ -20,6 +21,7 @@ export interface BlogPost {
     coverImage?: string;
     contentHtml?: string;
     toc?: { id: string; text: string }[];
+    blocks?: { id: string | null; content: string }[];
 }
 
 export function getAllPosts(): BlogPost[] {
@@ -88,11 +90,59 @@ export async function getPostData(slug: string): Promise<BlogPost> {
         .use(rehypeStringify)
         .process(matterResult.content);
 
-    const contentHtml = processedContent.toString();
+    const fullHtml = processedContent.toString();
+
+    // Split content into blocks based on H2 tags using Cheerio
+    const $ = cheerio.load(fullHtml, { xmlMode: false, decodeEntities: false }, false); // Use false as 3rd arg to load body fragment only
+    // Cheerio.load often wraps in <html><head><body>, for fragment use .load(html, null, false) is deprecated in some versions but generally we check output.
+    // Let's use standard load and extract body.
+
+    const body = $('body');
+    const blocks: { id: string | null; content: string }[] = [];
+
+    let currentBlockParts: string[] = [];
+    let currentId: string | null = null;
+
+    // Iterate over root level elements
+    body.contents().each((_, elem) => {
+        const tagName = $(elem).prop('tagName')?.toLowerCase();
+
+        if (tagName === 'h2') {
+            // If we have accumulated content for the previous block, push it
+            if (currentBlockParts.length > 0) {
+                blocks.push({
+                    id: currentId,
+                    content: currentBlockParts.join('')
+                });
+            }
+            // Start new block
+            currentBlockParts = [];
+            currentId = $(elem).attr('id') || null;
+            // Add the H2 itself to the new block
+            currentBlockParts.push($.html(elem));
+        } else {
+            // Add element to current block
+            currentBlockParts.push($.html(elem));
+        }
+    });
+
+    // Push the final block
+    if (currentBlockParts.length > 0) {
+        blocks.push({
+            id: currentId,
+            content: currentBlockParts.join('')
+        });
+    }
+
+    // If no H2s were found, put everything in one block
+    if (blocks.length === 0 && fullHtml.length > 0) {
+        blocks.push({ id: null, content: fullHtml });
+    }
 
     return {
         slug,
-        contentHtml,
+        contentHtml: fullHtml, // Keep for fallback
+        blocks,
         toc,
         title: matterResult.data.title,
         date: matterResult.data.date,
