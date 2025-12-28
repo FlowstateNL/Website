@@ -76,9 +76,9 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
             animate="visible"
             className="max-w-7xl mx-auto px-4"
         >
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12 items-start">
+            <div className="flex flex-col lg:flex-row justify-center gap-12 items-start">
                 {/* Main Content */}
-                <div className="max-w-3xl">
+                <div className="w-full lg:max-w-[750px]">
                     <motion.div variants={itemVariants}>
                         <Link
                             href="/blog"
@@ -132,7 +132,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
                 </div>
 
                 {/* Table of Contents (Desktop only) */}
-                <aside className="hidden lg:block sticky top-32 self-start">
+                <aside className="hidden lg:block sticky top-32 w-[280px] shrink-0">
                     <motion.div
                         variants={itemVariants}
                         className="bg-white/5 border border-white/10 rounded-3xl p-6"
