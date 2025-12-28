@@ -184,11 +184,11 @@ export default function HeroSection() {
                         className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-[1.1] tracking-tight mb-8"
                         style={{ color: '#fff' }}
                     >
-                        <span className="block">Jouw Bedrijf,</span>
+                        <span className="block">Niet harder werken,</span>
                         <span className="block">
-                            Aangedreven door{' '}
+                            maar{' '}
                             <span className="italic bg-gradient-to-r from-[#846ef7] via-[#a594f9] to-[#846ef7] bg-clip-text text-transparent pr-1">
-                                AI
+                                slimmer groeien
                             </span>
                         </span>
                     </motion.h1>
@@ -199,7 +199,7 @@ export default function HeroSection() {
                         className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12"
                         style={{ color: '#9CA3AF' }}
                     >
-                        Wij bouwen AI-gestuurde systemen die je helpen schalen zonder extra personeel aan te nemen. Transformeer jouw bedrijf met intelligente automatisering.
+                        In een snel veranderende wereld wint degene die vooruitkijkt. Wij transformeren jouw tijdrovende processen in een gestroomlijnde motor voor succes, zodat jij je kunt richten op wat écht telt: ondernemen met passie.
                     </motion.p>
 
                     {/* CTA Buttons */}

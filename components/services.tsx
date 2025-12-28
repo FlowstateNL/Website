@@ -291,11 +291,11 @@ export default function ServicesSection() {
                     className="text-center mb-20"
                 >
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6">
-                        AI-oplossingen die uw bedrijf naar het{' '}
+                        Technologie als het{' '}
                         <span className="italic bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent pr-1">
-                            volgende niveau
+                            kloppend hart
                         </span>{' '}
-                        tillen
+                        van jouw groei
                     </h2>
                 </motion.div>
 
