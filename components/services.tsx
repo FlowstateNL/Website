@@ -11,7 +11,7 @@ const services = [
         title: 'SEO Blog Creator',
         subtitle: 'Maak hoog scoren bij Google leuk en eenvoudig!',
         description: 'AI-gestuurde content generatie met enorme tijdsbesparing. Van uren naar minuten met automatische keyword targeting voor optimale vindbaarheid.',
-        tags: ['AI Content', 'SEO Optimized', 'Tijdbesparing'],
+        tags: ['AI Content', 'SEO Geoptimaliseerd', 'Tijdbesparing'],
         visual: 'email-inbox', // Will render appropriate visual
         align: 'right', // text right, visual left
     },
@@ -31,7 +31,7 @@ const services = [
         title: 'Klantenservice AI',
         subtitle: 'Altijd bereikbaar voor je klanten!',
         description: '24/7 beschikbaarheid met directe antwoorden op vragen. Verhoogde klanttevredenheid door snelle afhandeling zonder wachttijden.',
-        tags: ['24/7 Online', 'Instant Reply', 'Tevreden Klanten'],
+        tags: ['24/7 Online', 'Direct Antwoord', 'Tevreden Klanten'],
         visual: 'chat-widget',
         align: 'right',
     },
@@ -82,7 +82,7 @@ function EmailInboxVisual() {
                 }}
             >
                 <div className="flex gap-2 mb-4">
-                    {['Draft', 'Schedule', 'Sent'].map((tab, i) => (
+                    {['Concept', 'Inplannen', 'Verzonden'].map((tab, i) => (
                         <div
                             key={tab}
                             className="px-3 py-1.5 rounded-full text-xs"
@@ -118,7 +118,7 @@ function EmailInboxVisual() {
                         {lead.verified && (
                             <div className="flex items-center gap-1 text-xs text-green-400">
                                 <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                                Verified
+                                Geverifieerd
                             </div>
                         )}
                     </motion.div>
@@ -141,9 +141,9 @@ function SalesFlowVisual() {
                 <div className="text-sm text-gray-400 mb-4">Offerte versturen..</div>
                 <div className="space-y-3">
                     {[
-                        { label: 'LinkedIn', status: 'IT services' },
-                        { label: 'E-mail', status: 'Sent' },
-                        { label: 'Follow-up', status: 'Scheduled' },
+                        { label: 'LinkedIn', status: 'IT diensten' },
+                        { label: 'E-mail', status: 'Verzonden' },
+                        { label: 'Follow-up', status: 'Ingepland' },
                     ].map((item, i) => (
                         <motion.div
                             key={item.label}
@@ -234,10 +234,10 @@ function CustomProjectVisual() {
                 }}
             >
                 <div className="text-sm text-gray-400 mb-2">Hey David!</div>
-                <div className="text-white font-medium mb-4">Here is your Custom project & schedule</div>
+                <div className="text-white font-medium mb-4">Hier is je maatwerk project & planning</div>
 
                 <div className="mb-4 p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                    <div className="text-xs text-gray-500 mb-1">On going project:</div>
+                    <div className="text-xs text-gray-500 mb-1">Lopend project:</div>
                     <div className="text-sm text-white mb-2">Customer Support Chatbot</div>
                     <div className="flex items-center gap-2">
                         <div className="flex-1 h-2 rounded-full bg-white/10">
@@ -254,7 +254,7 @@ function CustomProjectVisual() {
                 </div>
 
                 <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500">
-                    {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((day, i) => (
+                    {['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'].map((day, i) => (
                         <div
                             key={day}
                             className={`p-2 rounded ${i === 2 ? 'bg-purple-500/20 text-purple-400' : ''}`}

@@ -14,7 +14,7 @@ export default function MaatwerkPage() {
                         transition={{ duration: 0.6 }}
                     >
                         <div className="inline-flex items-center px-4 py-2 rounded-full mb-6 bg-pink-500/10 border border-pink-500/30">
-                            <span className="text-sm font-medium text-pink-400">Custom Solutions</span>
+                            <span className="text-sm font-medium text-pink-400">Oplossingen op Maat</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6">
                             Maatwerk <span className="text-pink-500">AI</span>

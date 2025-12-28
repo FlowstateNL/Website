@@ -175,7 +175,7 @@ export default function HeroSection() {
                             background: 'rgba(255, 255, 255, 0.03)',
                         }}
                     >
-                        <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white bg-purple-600">New</span>
+                        <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white bg-purple-600">Nieuw</span>
                         <span className="px-3 py-1 text-xs font-medium text-gray-400">Rankpilot</span>
                     </motion.div>
 

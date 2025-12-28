@@ -11,7 +11,7 @@ export default function PrivacyPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                 >
-                    <h1 className="text-4xl md:text-5xl font-extrabold mb-8">Privacy Policy</h1>
+                    <h1 className="text-4xl md:text-5xl font-extrabold mb-8">Privacybeleid</h1>
                     <p className="text-gray-400 text-sm mb-12">Laatst bijgewerkt: 28 December 2025</p>
 
                     <section className="mb-10">

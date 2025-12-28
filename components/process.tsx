@@ -10,7 +10,7 @@ const steps = [
         description: 'We beoordelen jouw behoeften en identificeren AI-oplossingen om workflows te stroomlijnen.',
         visual: (
             <div className="space-y-2 mt-4">
-                {['System check', 'Process check', 'Speed check', 'Manual work', 'Repetitive task'].map((item, i) => (
+                {['Systeem check', 'Proces check', 'Snelheid check', 'Handmatig werk', 'Repetitieve taken'].map((item, i) => (
                     <motion.div
                         key={item}
                         initial={{ opacity: 0, x: -10 }}
@@ -31,7 +31,7 @@ const steps = [
                     transition={{ delay: 0.8 }}
                     className="mt-3 text-xs text-purple-400"
                 >
-                    Analyzing current workflow..
+                    Huidige workflow analyseren..
                 </motion.div>
             </div>
         ),
@@ -80,7 +80,7 @@ const steps = [
                         color: '#A78BFA',
                     }}
                 >
-                    Our<br />solution
+                    Onze<br />oplossing
                 </motion.div>
                 <motion.div
                     initial={{ opacity: 0, scale: 0 }}
@@ -105,7 +105,7 @@ const steps = [
                         color: '#60A5FA',
                     }}
                 >
-                    Your<br />stack
+                    Jouw<br />stack
                 </motion.div>
             </div>
         ),
@@ -124,8 +124,8 @@ const steps = [
                     className="flex items-center justify-between p-2 rounded-lg text-xs"
                     style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)' }}
                 >
-                    <span className="text-green-400">Chatbot system</span>
-                    <span className="text-green-300 text-[10px]">+20% efficiency</span>
+                    <span className="text-green-400">Chatbot systeem</span>
+                    <span className="text-green-300 text-[10px]">+20% efficiëntie</span>
                 </motion.div>
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -135,8 +135,8 @@ const steps = [
                     className="flex items-center justify-between p-2 rounded-lg text-xs"
                     style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)' }}
                 >
-                    <span className="text-blue-400">Workflow system</span>
-                    <span className="text-blue-300 text-[10px]">Update available</span>
+                    <span className="text-blue-400">Workflow systeem</span>
+                    <span className="text-blue-300 text-[10px]">Update beschikbaar</span>
                 </motion.div>
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -146,7 +146,7 @@ const steps = [
                     className="flex items-center justify-between p-2 rounded-lg text-xs"
                     style={{ background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.2)' }}
                 >
-                    <span className="text-purple-400">Sales system</span>
+                    <span className="text-purple-400">Sales systeem</span>
                     <span className="text-purple-300 text-[10px]">Up to date ✓</span>
                 </motion.div>
             </div>

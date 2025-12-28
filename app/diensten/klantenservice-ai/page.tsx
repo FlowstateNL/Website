@@ -14,7 +14,7 @@ export default function KlantenservicePage() {
                         transition={{ duration: 0.6 }}
                     >
                         <div className="inline-flex items-center px-4 py-2 rounded-full mb-6 bg-green-500/10 border border-green-500/30">
-                            <span className="text-sm font-medium text-green-400">24/7 Support</span>
+                            <span className="text-sm font-medium text-green-400">24/7 Ondersteuning</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6">
                             Klantenservice <span className="text-green-500">AI</span>

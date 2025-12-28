@@ -4,10 +4,10 @@ import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 
 const stats = [
-    { value: 50, suffix: '%', label: 'Operations Automated' },
-    { value: 20, suffix: '%', label: 'Cost Reduction' },
-    { value: 70, suffix: '+', label: 'Hours Saved/Month' },
-    { value: 2, suffix: 'x', label: 'Faster Client Onboarding' },
+    { value: 50, suffix: '%', label: 'Operaties Geautomatiseerd' },
+    { value: 20, suffix: '%', label: 'Kostenbesparing' },
+    { value: 70, suffix: '+', label: 'Uren Bespaard/Maand' },
+    { value: 2, suffix: 'x', label: 'Snellere Klant Onboarding' },
 ];
 
 function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
@@ -74,7 +74,7 @@ export default function StatsSection() {
                             color: '#A78BFA',
                         }}
                     >
-                        Case studies
+                        Casestudies
                     </span>
                 </motion.div>
 
