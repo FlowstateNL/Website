@@ -137,6 +137,19 @@ html {
 }
 
 /* Noise Texture Overlay */
+/* Blog Infographics */
+.infographic-container {
+  color: #111 !important;
+  /* Force dark text for light background infographics */
+  font-family: var(--font-inter);
+}
+
+.infographic-container h3,
+.infographic-container div,
+.infographic-container p {
+  color: inherit !important;
+}
+
 .bg-noise {
   position: fixed;
   top: 0;

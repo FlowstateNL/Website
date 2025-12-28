@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -65,9 +65,9 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                 });
             },
             {
-                // Detect headings when they are in the upper part of the screen
+                // Detect headings when they enter the top 40% of the viewport
                 rootMargin: '0px 0px -60% 0px',
-                threshold: 1.0
+                threshold: 0.5
             }
         );
 
@@ -113,17 +113,18 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                     <motion.div
                         variants={itemVariants}
                         className="prose prose-invert prose-lg max-w-none 
-                prose-headings:text-white prose-headings:font-bold
-                prose-p:text-gray-300 prose-p:leading-relaxed
-                prose-li:text-gray-300
-                prose-strong:text-purple-300
-                prose-a:text-purple-400 hover:prose-a:text-purple-300 transition-colors
-                prose-img:rounded-3xl prose-img:border prose-img:border-white/10"
+                    prose-headings:text-white prose-headings:font-bold
+                    prose-p:text-gray-300 prose-p:leading-relaxed
+                    prose-li:text-gray-300
+                    prose-strong:text-purple-300
+                    prose-a:text-purple-400 hover:prose-a:text-purple-300 transition-colors
+                    prose-img:rounded-3xl prose-img:border prose-img:border-white/10
+                    prose-hr:border-white/10"
                         dangerouslySetInnerHTML={{ __html: post.contentHtml || '' }}
                     />
 
                     <motion.div variants={itemVariants} className="mt-20 pt-10 border-t border-white/10">
-                        <div className="bg-white/5 rounded-3xl p-8 border border-white/10 text-center">
+                        <div className="bg-white/5 rounded-3xl p-8 border border-white/10 text-center shadow-2xl shadow-purple-500/5">
                             <h3 className="text-2xl font-bold text-white mb-4">Wilt u ook een geautomatiseerde blogstrategie?</h3>
                             <p className="text-gray-400 mb-8 max-w-xl mx-auto">
                                 Flowstate helpt bedrijven met het opzetten van AI-systemen die precies zoals dit blog werken: automatisch, SEO-vriendelijk en met uw eigen stem.
@@ -143,13 +144,13 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                     {/* Related Posts Section */}
                     {relatedPosts.length > 0 && (
                         <motion.div variants={itemVariants} className="mt-32">
-                            <h3 className="text-2xl font-bold text-white mb-8">Gerelateerde artikelen</h3>
+                            <h3 className="text-2xl font-bold text-white mb-8 border-b border-white/5 pb-4">Gerelateerde artikelen</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {relatedPosts.map((rPost) => (
                                     <Link
                                         key={rPost.slug}
                                         href={`/blog/${rPost.slug}`}
-                                        className="group bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-purple-500/30 transition-all"
+                                        className="group bg-white/[0.03] border border-white/10 rounded-2xl p-6 hover:border-purple-500/30 hover:bg-white/[0.05] transition-all duration-300"
                                     >
                                         <span className="text-xs text-purple-400 font-medium mb-2 block">{rPost.category}</span>
                                         <h4 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors mb-2">
@@ -171,23 +172,23 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                         variants={itemVariants}
                         className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-sm"
                     >
-                        <h4 className="text-white font-bold mb-4 text-xs uppercase tracking-[0.15em] opacity-50">Inhoudsopgave</h4>
+                        <h4 className="text-white font-bold mb-4 text-xs uppercase tracking-[0.15em] opacity-40">Inhoudsopgave</h4>
                         <nav className="space-y-4">
                             {toc.map((item) => (
                                 <motion.a
                                     key={item.id}
                                     href={`#${item.id}`}
-                                    className={`flex items-start gap-3 text-sm transition-all duration-500 relative ${activeId === item.id
+                                    className={`flex items-start gap-4 text-sm transition-all duration-500 group ${activeId === item.id
                                         ? 'text-purple-400 font-semibold'
                                         : 'text-gray-500 hover:text-gray-300'
                                         }`}
                                     whileHover={{ x: 4 }}
                                 >
-                                    <div className="relative mt-2">
-                                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${activeId === item.id ? 'bg-purple-500 scale-125 shadow-[0_0_8px_rgba(132,110,247,0.8)]' : 'bg-white/10'
+                                    <div className="relative mt-2 shrink-0">
+                                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${activeId === item.id ? 'bg-purple-500 scale-125 shadow-[0_0_10px_rgba(132,110,247,0.8)]' : 'bg-white/10 group-hover:bg-white/30'
                                             }`} />
                                     </div>
-                                    <span className={`leading-snug transition-all duration-500 ${activeId === item.id ? 'translate-x-1' : ''}`}>
+                                    <span className={`leading-snug transition-all duration-500`}>
                                         {item.text}
                                     </span>
                                 </motion.a>
@@ -195,8 +196,9 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                         </nav>
 
                         <div className="mt-10 pt-6 border-t border-white/5">
-                            <Link href="/contact" className="text-[10px] text-purple-400/60 uppercase tracking-widest hover:text-purple-400 transition-colors">
-                                → Start jouw automatisering
+                            <Link href="/contact" className="text-[10px] text-purple-400/50 uppercase tracking-widest hover:text-purple-400 transition-colors flex items-center gap-2">
+                                <span>→</span>
+                                <span>Start jouw automatisering</span>
                             </Link>
                         </div>
                     </motion.div>
