@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface BlogPostClientProps {
     post: {
@@ -11,6 +12,11 @@ interface BlogPostClientProps {
         contentHtml?: string;
         excerpt: string;
     };
+}
+
+interface TocItem {
+    id: string;
+    text: string;
 }
 
 const containerVariants = {
@@ -42,63 +48,140 @@ const itemVariants = {
 };
 
 export default function BlogPostClient({ post }: BlogPostClientProps) {
+    const [toc, setToc] = useState<TocItem[]>([]);
+    const [activeId, setActiveId] = useState<string>('');
+
+    useEffect(() => {
+        // Extract H2 headings for TOC
+        if (post.contentHtml) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(post.contentHtml, 'text/html');
+            const h2s = Array.from(doc.querySelectorAll('h2'));
+            const items = h2s.map((h2) => ({
+                id: h2.id,
+                text: h2.textContent || '',
+            })).filter(item => item.id);
+            setToc(items);
+        }
+
+        // Active heading detection
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setActiveId(entry.target.id);
+                    }
+                });
+            },
+            { rootMargin: '0px 0px -80% 0px' }
+        );
+
+        const headings = document.querySelectorAll('h2');
+        headings.forEach((heading) => observer.observe(heading));
+
+        return () => {
+            headings.forEach((heading) => observer.unobserve(heading));
+        };
+    }, [post.contentHtml]);
+
     return (
         <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="max-w-3xl mx-auto"
+            className="max-w-7xl mx-auto px-4"
         >
-            <motion.div variants={itemVariants}>
-                <Link
-                    href="/blog"
-                    className="text-purple-400 hover:text-purple-300 transition-colors mb-8 inline-block text-sm font-medium"
-                >
-                    &larr; Terug naar overzicht
-                </Link>
-            </motion.div>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr,280px] gap-12">
+                {/* Main Content */}
+                <div className="max-w-3xl">
+                    <motion.div variants={itemVariants}>
+                        <Link
+                            href="/blog"
+                            className="text-purple-400 hover:text-purple-300 transition-colors mb-8 inline-block text-sm font-medium"
+                        >
+                            &larr; Terug naar overzicht
+                        </Link>
+                    </motion.div>
 
-            <motion.div variants={itemVariants} className="mb-12">
-                <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                    <span className="text-purple-400 font-medium">{post.category}</span>
-                    <span>•</span>
-                    <span>{new Date(post.date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                    <motion.div variants={itemVariants} className="mb-12">
+                        <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                            <span className="text-purple-400 font-medium">{post.category}</span>
+                            <span>•</span>
+                            <span>{new Date(post.date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                            {post.title}
+                        </h1>
+                    </motion.div>
+
+                    {/* Blog content rendered from Markdown */}
+                    <motion.div
+                        variants={itemVariants}
+                        className="prose prose-invert prose-lg max-w-none 
+                prose-headings:text-white prose-headings:font-bold
+                prose-p:text-gray-300 prose-p:leading-relaxed
+                prose-li:text-gray-300
+                prose-strong:text-purple-300
+                prose-a:text-purple-400 hover:prose-a:text-purple-300 transition-colors
+                prose-img:rounded-3xl prose-img:border prose-img:border-white/10"
+                        dangerouslySetInnerHTML={{ __html: post.contentHtml || '' }}
+                    />
+
+                    <motion.div variants={itemVariants} className="mt-20 pt-10 border-t border-white/10">
+                        <div className="bg-white/5 rounded-3xl p-8 border border-white/10 text-center">
+                            <h3 className="text-2xl font-bold text-white mb-4">Wilt u ook een geautomatiseerde blogstrategie?</h3>
+                            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+                                Flowstate helpt bedrijven met het opzetten van AI-systemen die precies zoals dit blog werken: automatisch, SEO-vriendelijk en met uw eigen stem.
+                            </p>
+                            <Link
+                                href="/contact"
+                                className="inline-block px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 shadow-lg shadow-purple-500/20"
+                                style={{
+                                    background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)',
+                                }}
+                            >
+                                Neem contact op
+                            </Link>
+                        </div>
+                    </motion.div>
                 </div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
-                    {post.title}
-                </h1>
-            </motion.div>
 
-            {/* Blog content rendered from Markdown */}
-            <motion.div
-                variants={itemVariants}
-                className="prose prose-invert prose-lg max-w-none 
-          prose-headings:text-white prose-headings:font-bold
-          prose-p:text-gray-300 prose-p:leading-relaxed
-          prose-li:text-gray-300
-          prose-strong:text-purple-300
-          prose-a:text-purple-400 hover:prose-a:text-purple-300 transition-colors"
-                dangerouslySetInnerHTML={{ __html: post.contentHtml || '' }}
-            />
+                {/* Table of Contents (Desktop only) */}
+                <aside className="hidden lg:block">
+                    <div className="sticky top-40">
+                        <motion.div
+                            variants={itemVariants}
+                            className="bg-white/5 border border-white/10 rounded-3xl p-6"
+                        >
+                            <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Inhoudstafel</h4>
+                            <nav className="space-y-3">
+                                {toc.map((item) => (
+                                    <motion.a
+                                        key={item.id}
+                                        href={`#${item.id}`}
+                                        className={`block text-sm transition-all duration-300 ${activeId === item.id
+                                            ? 'text-purple-400 font-semibold'
+                                            : 'text-gray-500 hover:text-gray-300'
+                                            }`}
+                                        whileHover={{ x: 5 }}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-1 h-1 rounded-full transition-all ${activeId === item.id ? 'bg-purple-400 scale-150' : 'bg-transparent'
+                                                }`} />
+                                            {item.text}
+                                        </div>
+                                    </motion.a>
+                                ))}
+                            </nav>
 
-            <motion.div variants={itemVariants} className="mt-20 pt-10 border-t border-white/10">
-                <div className="bg-white/5 rounded-3xl p-8 border border-white/10 text-center">
-                    <h3 className="text-2xl font-bold text-white mb-4">Wilt u ook een geautomatiseerde blogstrategie?</h3>
-                    <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-                        Flowstate helpt bedrijven met het opzetten van AI-systemen die precies zoals dit blog werken: automatisch, SEO-vriendelijk en met uw eigen stem.
-                    </p>
-                    <Link
-                        href="/contact"
-                        className="inline-block px-8 py-4 rounded-full font-semibold text-white transition-all duration-300"
-                        style={{
-                            background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)',
-                            boxShadow: '0 0 30px rgba(132, 110, 247, 0.4)',
-                        }}
-                    >
-                        Neem contact op
-                    </Link>
-                </div>
-            </motion.div>
+                            {/* Social Proof / Tiny Call to Action in TOC */}
+                            <div className="mt-10 pt-6 border-t border-white/5">
+                                <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-2 italic">Aangedreven door Flowstate AI</p>
+                            </div>
+                        </motion.div>
+                    </div>
+                </aside>
+            </div>
         </motion.div>
     );
 }
