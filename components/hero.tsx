@@ -89,8 +89,10 @@ export default function HeroSection() {
     const nebulaY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
     const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '10%']);
 
-    const titleLine1 = "Niet harder werken,";
-    const titleLine2 = "maar slimmer groeien";
+    // Exact text from goflowstate.framer.website
+    const titleLine1 = "Intelligente automatisering.";
+    const titleLine2 = "Optimale flow.";
+    const subtitle = "Flowstate brengt AI-automatisering binnen handbereik en stroomlijnt taken.";
 
     return (
         <section
@@ -167,19 +169,19 @@ export default function HeroSection() {
                     {/* Badge */}
                     <motion.div
                         variants={heroItemVariants}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
+                        className="inline-flex items-center rounded-full mb-8 overflow-hidden"
                         style={{
-                            background: 'rgba(255, 255, 255, 0.05)',
                             border: '1px solid rgba(255, 255, 255, 0.1)',
+                            background: 'rgba(255, 255, 255, 0.03)',
                         }}
                     >
-                        <span className="text-sm font-medium" style={{ color: '#846ef7' }}>New</span>
-                        <span className="text-sm text-[#9CA3AF]">Beschikbaar in Groningen</span>
+                        <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white bg-purple-600">New</span>
+                        <span className="px-3 py-1 text-xs font-medium text-gray-400">Rankpilot</span>
                     </motion.div>
 
-                    {/* Main Title - Word by Word Stagger */}
+                    {/* Main Title - Exact word-by-word stagger */}
                     <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-[1.1] tracking-tight mb-8">
-                        <motion.div variants={wordContainerVariants} className="block overflow-hidden pb-2">
+                        <motion.div variants={wordContainerVariants} className="block overflow-hidden pb-1">
                             {titleLine1.split(' ').map((word, i) => (
                                 <motion.span
                                     key={i}
@@ -191,26 +193,15 @@ export default function HeroSection() {
                             ))}
                         </motion.div>
                         <motion.div variants={wordContainerVariants} className="block overflow-hidden">
-                            {"maar ".split(' ').map((word, i) => (
+                            {titleLine2.split(' ').map((word, i) => (
                                 <motion.span
-                                    key={`maar-${i}`}
+                                    key={i}
                                     variants={wordVariants}
-                                    className="inline-block mr-[0.25em] text-white"
+                                    className={`${word.toLowerCase().includes('flow') ? 'italic bg-gradient-to-r from-[#846ef7] via-[#a594f9] to-[#846ef7] bg-clip-text text-transparent' : 'text-white'} inline-block mr-[0.25em] last:mr-0`}
                                 >
                                     {word}
                                 </motion.span>
                             ))}
-                            <span className="italic bg-gradient-to-r from-[#846ef7] via-[#a594f9] to-[#846ef7] bg-clip-text text-transparent pr-1 inline-flex">
-                                {"slimmer groeien".split(' ').map((word, i) => (
-                                    <motion.span
-                                        key={i}
-                                        variants={wordVariants}
-                                        className="inline-block mr-[0.25em] last:mr-0"
-                                    >
-                                        {word}
-                                    </motion.span>
-                                ))}
-                            </span>
                         </motion.div>
                     </h1>
 
@@ -220,7 +211,7 @@ export default function HeroSection() {
                         className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12"
                         style={{ color: '#9CA3AF' }}
                     >
-                        In een snel veranderende wereld wint degene die vooruitkijkt. Wij transformeren jouw tijdrovende processen in een gestroomlijnde motor voor succes.
+                        {subtitle}
                     </motion.p>
 
                     {/* CTA Buttons */}
