@@ -82,7 +82,7 @@ export default function Footer() {
                                     <Link
                                         href={link.href}
                                         onClick={(e) => handleSmoothScroll(e, link.href)}
-                                        className="text-sm transition-colors hover:text-white hover:text-purple-300"
+                                        className="text-sm transition-colors hover:text-white hover:text-purple-300 w-fit block"
                                         style={{ color: '#6B7280' }}
                                     >
                                         {link.label}
@@ -100,7 +100,7 @@ export default function Footer() {
                                     <Link
                                         href={link.href}
                                         onClick={(e) => handleSmoothScroll(e, link.href)}
-                                        className="text-sm transition-colors hover:text-white hover:text-purple-300"
+                                        className="text-sm transition-colors hover:text-white hover:text-purple-300 w-fit block"
                                         style={{ color: '#6B7280' }}
                                     >
                                         {link.label}

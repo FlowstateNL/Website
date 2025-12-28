@@ -90,24 +90,30 @@ export default function Navbar() {
 
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center gap-8">
-                            <motion.div whileHover="hover">
+                            <div>
                                 <Link
                                     href="/"
                                     className="text-sm font-medium transition-colors relative"
                                     style={{ color: '#9CA3AF' }}
                                     onClick={(e) => handleSmoothScroll(e, '/')}
                                 >
-                                    <motion.span variants={linkVariants} className="relative">
+                                    <motion.span
+                                        whileHover="hover"
+                                        variants={linkVariants}
+                                        className="relative"
+                                    >
                                         Home
                                         <motion.span
                                             className="absolute -bottom-1 left-0 h-0.5 bg-purple-500"
                                             initial={{ width: 0 }}
-                                            whileHover={{ width: '100%' }}
+                                            variants={{
+                                                hover: { width: '100%' }
+                                            }}
                                             transition={{ duration: 0.2 }}
                                         />
                                     </motion.span>
                                 </Link>
-                            </motion.div>
+                            </div>
 
                             {/* Dropdown for Diensten */}
                             <div
@@ -150,7 +156,7 @@ export default function Navbar() {
 
                             {/* Other Links */}
                             {navLinks.filter(l => l.label !== 'Home').map((link) => (
-                                <motion.div key={link.href} whileHover="hover">
+                                <div key={link.href}>
                                     <Link
                                         href={link.href}
                                         onClick={(e) => handleSmoothScroll(e, link.href)}
@@ -158,6 +164,7 @@ export default function Navbar() {
                                         style={{ color: '#9CA3AF' }}
                                     >
                                         <motion.span
+                                            whileHover="hover"
                                             variants={linkVariants}
                                             className="relative"
                                         >
@@ -165,12 +172,14 @@ export default function Navbar() {
                                             <motion.span
                                                 className="absolute -bottom-1 left-0 h-0.5 bg-purple-500"
                                                 initial={{ width: 0 }}
-                                                whileHover={{ width: '100%' }}
+                                                variants={{
+                                                    hover: { width: '100%' }
+                                                }}
                                                 transition={{ duration: 0.2 }}
                                             />
                                         </motion.span>
                                     </Link>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
 
@@ -227,7 +236,7 @@ export default function Navbar() {
                             <Link
                                 href="/"
                                 onClick={(e) => handleSmoothScroll(e, '/')}
-                                className="text-white text-4xl font-bold tracking-tight hover:text-purple-500 transition-colors"
+                                className="text-white text-4xl font-bold tracking-tight hover:text-purple-500 transition-colors w-fit mx-auto"
                             >
                                 Home
                             </Link>
@@ -241,7 +250,7 @@ export default function Navbar() {
                                             key={link.href}
                                             href={link.href}
                                             onClick={() => setIsMobileMenuOpen(false)}
-                                            className="text-white text-2xl font-medium hover:text-purple-400 transition-colors"
+                                            className="text-white text-2xl font-medium hover:text-purple-400 transition-colors w-fit"
                                         >
                                             {link.label}
                                         </Link>
@@ -256,7 +265,7 @@ export default function Navbar() {
                                     key={link.href}
                                     href={link.href}
                                     onClick={(e) => handleSmoothScroll(e, link.href)}
-                                    className="text-white text-4xl font-bold tracking-tight hover:text-purple-500 transition-colors"
+                                    className="text-white text-4xl font-bold tracking-tight hover:text-purple-500 transition-colors w-fit mx-auto"
                                 >
                                     {link.label}
                                 </Link>

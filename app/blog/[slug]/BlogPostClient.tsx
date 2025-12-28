@@ -161,10 +161,10 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                                     <Link
                                         key={rPost.slug}
                                         href={`/blog/${rPost.slug}`}
-                                        className="group bg-white/[0.03] border border-white/10 rounded-2xl p-6 hover:border-purple-500/30 hover:bg-white/[0.05] transition-all duration-300"
+                                        className="group bg-white/[0.03] border border-white/10 rounded-2xl p-6 transition-all duration-300"
                                     >
                                         <span className="text-xs text-purple-400 font-medium mb-2 block">{rPost.category}</span>
-                                        <h4 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors mb-2">
+                                        <h4 className="text-lg font-bold text-white hover:text-purple-300 transition-colors mb-2 w-fit">
                                             {rPost.title}
                                         </h4>
                                         <p className="text-sm text-gray-500 line-clamp-2">
@@ -194,7 +194,7 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                                     <motion.a
                                         key={item.id}
                                         href={`#${item.id}`}
-                                        className={`flex items-start gap-4 text-sm transition-all duration-500 group ${isActive
+                                        className={`flex items-start gap-4 text-sm transition-all duration-500 group w-fit ${isActive
                                             ? 'text-purple-400 font-semibold'
                                             : 'text-gray-500 hover:text-gray-300'
                                             }`}
@@ -213,7 +213,7 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                         </nav>
 
                         <div className="mt-10 pt-6 border-t border-white/5">
-                            <Link href="/contact" className="text-[10px] text-purple-400/50 uppercase tracking-widest hover:text-purple-400 transition-colors flex items-center gap-2">
+                            <Link href="/contact" className="text-[10px] text-purple-400/50 uppercase tracking-widest hover:text-purple-400 transition-colors flex items-center gap-2 w-fit">
                                 <span>→</span>
                                 <span>Start jouw automatisering</span>
                             </Link>
