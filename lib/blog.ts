@@ -132,17 +132,11 @@ export async function getPostData(slug: string): Promise<BlogPost> {
         });
     }
 
-    // Prepend the Title to the TOC
-    const finalToc = [
-        { id: 'article-title', text: 'Introductie' }, // Always have intro as first TOC item
-        ...toc
-    ];
-
     return {
         slug,
         contentHtml: fullHtml,
         blocks,
-        toc: finalToc,
+        toc,
         title: matterResult.data.title,
         date: matterResult.data.date,
         excerpt: matterResult.data.excerpt,

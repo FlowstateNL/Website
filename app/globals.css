@@ -158,14 +158,15 @@ html {
 }
 
 .infographic-container div {
-  color: #9ea3b0 !important;
+  color: #ffffff !important;
 }
 
 .infographic-container p {
-  color: #6b7280 !important;
+  color: #ffffff !important;
   font-size: 0.875rem !important;
   margin-top: 1rem !important;
   font-style: italic;
+  opacity: 0.8;
 }
 
 /* Fix for the progress bars inside infographics */

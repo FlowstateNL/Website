@@ -185,9 +185,10 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                     >
                         <h4 className="text-white font-bold mb-4 text-xs uppercase tracking-[0.15em] opacity-40">Inhoudsopgave</h4>
                         <nav className="space-y-4">
-                            {toc.map((item) => {
+                            {toc.map((item, index) => {
                                 // Match the TOC id (e.g. 'article-title') with the activeId or block ID ('intro')
-                                const isActive = activeId === item.id || (item.id === 'article-title' && activeId === 'intro');
+                                const isFirstItem = index === 0;
+                                const isActive = activeId === item.id || (activeId === 'intro' && isFirstItem);
 
                                 return (
                                     <motion.a
