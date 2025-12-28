@@ -29,7 +29,7 @@ const heroItemVariants = {
         scale: 1,
         transition: {
             duration: 0.8,
-            ease: [0.23, 1, 0.32, 1], // Quintic ease-out like Framer
+            ease: [0.23, 1, 0.32, 1] as const, // Quintic ease-out like Framer
         },
     },
 };
@@ -59,7 +59,7 @@ const buttonVariants = {
         scale: 1,
         transition: {
             duration: 0.6,
-            ease: [0.23, 1, 0.32, 1],
+            ease: [0.23, 1, 0.32, 1] as const,
         },
     },
 };
@@ -212,7 +212,7 @@ export default function HeroSection() {
                             whileTap={{ scale: 0.98 }}
                         >
                             <Link
-                                href="#contact"
+                                href="/contact"
                                 className="group inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300"
                                 style={{
                                     background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)',
