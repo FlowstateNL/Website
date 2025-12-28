@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <img id="logo" src="/Users/kevinboon/.gemini/antigravity/brain/f21f8df0-e446-426b-9ed3-66aae9a68b55/uploaded_image_0_1766877646756.png" style="display:none;" />
+  <canvas id="canvas"></canvas>
+  <script>
+    window.onload = function() {
+      const img = document.getElementById('logo');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      
+      // Sample a few points to find the dominant non-black/white color (the purple)
+      // We'll scan the center area
+      const centerX = Math.floor(img.width / 2);
+      const centerY = Math.floor(img.height / 2);
+      const p = ctx.getImageData(centerX, centerY, 1, 1).data;
+      
+      // If center is transparent or dark background, scan until we find color
+      let color = null;
+      const data = ctx.getImageData(0, 0, img.width, img.height).data;
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const a = data[i + 3];
+        
+        // Look for purple-ish color (high Blue, medium Red, low Green)
+        if (b > r && b > g && b > 100) {
+           color = {r, g, b};
+           break;
+        }
+      }
+      
+      if (color) {
+        const hex = "#" + ((1 << 24) + (color.r << 16) + (color.g << 8) + color.b).toString(16).slice(1);
+        document.body.innerText = "DETECTED_COLOR:" + hex;
+      } else {
+        document.body.innerText = "NO_COLOR_FOUND";
+      }
+    }
+  </script>
+</body>
+</html>
