@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -13,6 +13,14 @@ interface BlogPostClientProps {
         excerpt: string;
         toc?: { id: string; text: string }[];
     };
+    relatedPosts: {
+        slug: string;
+        title: string;
+        date: string;
+        excerpt: string;
+        category: string;
+        coverImage?: string;
+    }[];
 }
 
 const containerVariants = {
@@ -43,13 +51,19 @@ const itemVariants = {
     },
 };
 
-export default function BlogPostClient({ post }: BlogPostClientProps) {
+export default function BlogPostClient({ post, relatedPosts }: BlogPostClientProps) {
     const [activeId, setActiveId] = useState<string>('');
-    // Use the TOC provided by the server, or default to empty
     const toc = post.toc || [];
 
+    // Scroll Progress Bar
+    const { scrollYProgress } = useScroll();
+    const scaleX = useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 30,
+        restDelta: 0.001
+    });
+
     useEffect(() => {
-        // Active heading detection
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -58,7 +72,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
                     }
                 });
             },
-            { rootMargin: '0px 0px -80% 0px' }
+            { rootMargin: '0px 0px -70% 0px' }
         );
 
         const headings = document.querySelectorAll('h2');
@@ -70,101 +84,142 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
     }, []);
 
     return (
-        <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="max-w-6xl mx-auto px-4"
-        >
-            <div className="flex flex-col lg:flex-row justify-center gap-8 items-start">
-                {/* Main Content */}
-                <div className="w-full lg:max-w-[720px]">
-                    <motion.div variants={itemVariants}>
-                        <Link
-                            href="/blog"
-                            className="text-purple-400 hover:text-purple-300 transition-colors mb-8 inline-block text-sm font-medium"
-                        >
-                            &larr; Terug naar overzicht
-                        </Link>
-                    </motion.div>
+        <>
+            {/* Scroll Progress Bar */}
+            <motion.div
+                className="fixed top-0 left-0 right-0 h-1 bg-purple-500 origin-left z-[100]"
+                style={{ scaleX }}
+            />
 
-                    <motion.div variants={itemVariants} className="mb-12">
-                        <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                            <span className="text-purple-400 font-medium">{post.category}</span>
-                            <span>•</span>
-                            <span>{new Date(post.date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                        </div>
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
-                            {post.title}
-                        </h1>
-                    </motion.div>
-
-                    {/* Blog content rendered from Markdown */}
-                    <motion.div
-                        variants={itemVariants}
-                        className="prose prose-invert prose-lg max-w-none 
-                prose-headings:text-white prose-headings:font-bold
-                prose-p:text-gray-300 prose-p:leading-relaxed
-                prose-li:text-gray-300
-                prose-strong:text-purple-300
-                prose-a:text-purple-400 hover:prose-a:text-purple-300 transition-colors
-                prose-img:rounded-3xl prose-img:border prose-img:border-white/10"
-                        dangerouslySetInnerHTML={{ __html: post.contentHtml || '' }}
-                    />
-
-                    <motion.div variants={itemVariants} className="mt-20 pt-10 border-t border-white/10">
-                        <div className="bg-white/5 rounded-3xl p-8 border border-white/10 text-center">
-                            <h3 className="text-2xl font-bold text-white mb-4">Wilt u ook een geautomatiseerde blogstrategie?</h3>
-                            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-                                Flowstate helpt bedrijven met het opzetten van AI-systemen die precies zoals dit blog werken: automatisch, SEO-vriendelijk en met uw eigen stem.
-                            </p>
+            <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="max-w-6xl mx-auto px-4"
+            >
+                <div className="flex flex-col lg:flex-row justify-center gap-8 items-start">
+                    {/* Main Content */}
+                    <div className="w-full lg:max-w-[720px]">
+                        <motion.div variants={itemVariants}>
                             <Link
-                                href="/contact"
-                                className="inline-block px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 shadow-lg shadow-purple-500/20"
-                                style={{
-                                    background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)',
-                                }}
+                                href="/blog"
+                                className="text-purple-400 hover:text-purple-300 transition-colors mb-8 inline-block text-sm font-medium"
                             >
-                                Neem contact op
+                                &larr; Terug naar overzicht
                             </Link>
-                        </div>
-                    </motion.div>
-                </div>
+                        </motion.div>
 
-                {/* Table of Contents (Desktop only) */}
-                <aside className="hidden lg:block sticky top-32 w-[280px] shrink-0">
-                    <motion.div
-                        variants={itemVariants}
-                        className="bg-white/5 border border-white/10 rounded-3xl p-6"
-                    >
-                        <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Inhoudsopgave</h4>
-                        <nav className="space-y-3">
-                            {toc.map((item) => (
-                                <motion.a
-                                    key={item.id}
-                                    href={`#${item.id}`}
-                                    className={`block text-sm transition-all duration-300 ${activeId === item.id
-                                        ? 'text-purple-400 font-semibold'
-                                        : 'text-gray-500 hover:text-gray-300'
-                                        }`}
-                                    whileHover={{ x: 5 }}
+                        <motion.div variants={itemVariants} className="mb-12">
+                            <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                                <span className="text-purple-500 font-medium">{post.category}</span>
+                                <span>•</span>
+                                <span>{new Date(post.date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                            </div>
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+                                {post.title}
+                            </h1>
+                        </motion.div>
+
+                        {/* Blog content rendered from Markdown */}
+                        <motion.div
+                            variants={itemVariants}
+                            className="prose prose-invert prose-lg max-w-none 
+                    prose-headings:text-white prose-headings:font-bold
+                    prose-p:text-gray-300 prose-p:leading-relaxed
+                    prose-li:text-gray-300
+                    prose-strong:text-purple-300
+                    prose-a:text-purple-400 hover:prose-a:text-purple-300 transition-colors
+                    prose-img:rounded-3xl prose-img:border prose-img:border-white/10"
+                            dangerouslySetInnerHTML={{ __html: post.contentHtml || '' }}
+                        />
+
+                        <motion.div variants={itemVariants} className="mt-20 pt-10 border-t border-white/10">
+                            <div className="bg-white/5 rounded-3xl p-8 border border-white/10 text-center">
+                                <h3 className="text-2xl font-bold text-white mb-4">Wilt u ook een geautomatiseerde blogstrategie?</h3>
+                                <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+                                    Flowstate helpt bedrijven met het opzetten van AI-systemen die precies zoals dit blog werken: automatisch, SEO-vriendelijk en met uw eigen stem.
+                                </p>
+                                <Link
+                                    href="/contact"
+                                    className="inline-block px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 shadow-xl shadow-purple-500/20"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)',
+                                    }}
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <div className={`w-1 h-1 rounded-full transition-all ${activeId === item.id ? 'bg-purple-400 scale-150' : 'bg-transparent'
-                                            }`} />
-                                        {item.text}
-                                    </div>
-                                </motion.a>
-                            ))}
-                        </nav>
+                                    Neem contact op
+                                </Link>
+                            </div>
+                        </motion.div>
 
-                        {/* Social Proof / Tiny Call to Action in TOC */}
-                        <div className="mt-10 pt-6 border-t border-white/5">
-                            <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-2 italic">Aangedreven door Flowstate AI</p>
-                        </div>
-                    </motion.div>
-                </aside>
-            </div>
-        </motion.div>
+                        {/* Related Posts Section */}
+                        {relatedPosts.length > 0 && (
+                            <motion.div variants={itemVariants} className="mt-32">
+                                <h3 className="text-2xl font-bold text-white mb-8">Gerelateerde artikelen</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {relatedPosts.map((rPost) => (
+                                        <Link
+                                            key={rPost.slug}
+                                            href={`/blog/${rPost.slug}`}
+                                            className="group bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-purple-500/30 transition-all"
+                                        >
+                                            <span className="text-xs text-purple-400 font-medium mb-2 block">{rPost.category}</span>
+                                            <h4 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors mb-2">
+                                                {rPost.title}
+                                            </h4>
+                                            <p className="text-sm text-gray-500 line-clamp-2">
+                                                {rPost.excerpt}
+                                            </p>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
+                    </div>
+
+                    {/* Table of Contents (Desktop only) */}
+                    <aside className="hidden lg:block sticky top-32 w-[280px] shrink-0">
+                        <motion.div
+                            variants={itemVariants}
+                            className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-sm"
+                        >
+                            <h4 className="text-white font-bold mb-4 text-xs uppercase tracking-[0.15em] opacity-50">Inhoudsopgave</h4>
+                            <nav className="space-y-4">
+                                {toc.map((item) => (
+                                    <motion.a
+                                        key={item.id}
+                                        href={`#${item.id}`}
+                                        className={`flex items-start gap-3 text-sm transition-all duration-500 relative ${activeId === item.id
+                                            ? 'text-purple-400'
+                                            : 'text-gray-500 hover:text-gray-300'
+                                            }`}
+                                        whileHover={{ x: 4 }}
+                                    >
+                                        <div className="relative mt-2">
+                                            <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${activeId === item.id ? 'bg-purple-500 scale-125 shadow-[0_0_8px_rgba(132,110,247,0.8)]' : 'bg-white/10'
+                                                }`} />
+                                            {activeId === item.id && (
+                                                <motion.div
+                                                    layoutId="activeIndicator"
+                                                    className="absolute -inset-1 border border-purple-500/30 rounded-full"
+                                                />
+                                            )}
+                                        </div>
+                                        <span className={`leading-snug transition-all duration-500 ${activeId === item.id ? 'translate-x-1' : ''}`}>
+                                            {item.text}
+                                        </span>
+                                    </motion.a>
+                                ))}
+                            </nav>
+
+                            <div className="mt-10 pt-6 border-t border-white/5">
+                                <Link href="/contact" className="text-[10px] text-purple-400/60 uppercase tracking-widest hover:text-purple-400 transition-colors">
+                                    → Start jouw automatisering
+                                </Link>
+                            </div>
+                        </motion.div>
+                    </aside>
+                </div>
+            </motion.div>
+        </>
     );
 }

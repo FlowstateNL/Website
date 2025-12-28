@@ -22,9 +22,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     const { slug } = await params;
     const post = await getPostData(slug);
 
+    // Fetch related posts (latest 3 excluding current)
+    const allPosts = getAllPosts();
+    const relatedPosts = allPosts
+        .filter((p) => p.slug !== slug)
+        .slice(0, 3);
+
     return (
         <article className="min-h-screen pt-32 pb-20 px-6">
-            <BlogPostClient post={post} />
+            <BlogPostClient post={post} relatedPosts={relatedPosts} />
         </article>
     );
 }
