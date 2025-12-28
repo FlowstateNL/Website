@@ -6,11 +6,18 @@ import Link from 'next/link';
 
 const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/#diensten', label: 'Diensten' },
+    // 'Diensten' is handled separately for dropdown
     { href: '/#proces', label: 'Proces' },
     { href: '/over-ons', label: 'Over ons' },
     { href: '/blog', label: 'Blog' },
     { href: '/contact', label: 'Contact' },
+];
+
+const serviceLinks = [
+    { href: '/diensten/seo-blog-creator', label: 'SEO Blog Creator' },
+    { href: '/diensten/offerte-automations', label: 'Offerte Automations' },
+    { href: '/diensten/klantenservice-ai', label: 'Klantenservice AI' },
+    { href: '/diensten/maatwerk-ai', label: 'Maatwerk AI' },
 ];
 
 const linkVariants = {
@@ -23,6 +30,7 @@ const linkVariants = {
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -33,12 +41,11 @@ export default function Navbar() {
     }, []);
 
     const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-        if (href.startsWith('#')) {
-            e.preventDefault();
-            const element = document.getElementById(href.slice(1));
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-            }
+        if (href.startsWith('#') || href.startsWith('/#')) {
+            // e.preventDefault(); // Let Next.js handle routing, but smooth scroll if on same page
+            // Not strictly preventing default here to allow cross-page anchor linking
+            setIsMobileMenuOpen(false);
+        } else {
             setIsMobileMenuOpen(false);
         }
     };
@@ -75,7 +82,52 @@ export default function Navbar() {
 
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center gap-8">
-                            {navLinks.map((link) => (
+                            <motion.div whileHover="hover">
+                                <Link href="/" className="text-sm font-medium text-gray-400 hover:text-white transition-colors relative">
+                                    Home
+                                </Link>
+                            </motion.div>
+
+                            {/* Dropdown for Diensten */}
+                            <div
+                                className="relative group"
+                                onMouseEnter={() => setIsDropdownOpen(true)}
+                                onMouseLeave={() => setIsDropdownOpen(false)}
+                            >
+                                <button className="flex items-center gap-1 text-sm font-medium text-gray-400 group-hover:text-white transition-colors focus:outline-none py-2">
+                                    Diensten
+                                    <svg className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <AnimatePresence>
+                                    {isDropdownOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="absolute top-full left-0 mt-2 w-56 rounded-xl overflow-hidden border border-white/10 backdrop-blur-xl bg-black/90 shadow-2xl"
+                                        >
+                                            <div className="py-2">
+                                                {serviceLinks.map((link) => (
+                                                    <Link
+                                                        key={link.href}
+                                                        href={link.href}
+                                                        className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                                                    >
+                                                        {link.label}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            {/* Other Links */}
+                            {navLinks.filter(l => l.label !== 'Home').map((link) => (
                                 <motion.div key={link.href} whileHover="hover">
                                     <Link
                                         href={link.href}
@@ -146,26 +198,44 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: '-100%' }}
                         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                        className="fixed inset-0 z-40 flex flex-col items-center justify-center md:hidden"
+                        className="fixed inset-0 z-40 flex flex-col items-center justify-center md:hidden overflow-y-auto"
                         style={{ backgroundColor: '#000' }}
                     >
-                        <div className="flex flex-col items-center gap-8">
-                            {navLinks.map((link, i) => (
-                                <motion.div
-                                    key={link.href}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.1 + i * 0.1, duration: 0.4 }}
-                                >
+                        <div className="flex flex-col items-center gap-6 py-8">
+                            <Link
+                                href="/"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="text-white text-3xl font-bold tracking-tight hover:text-purple-500 transition-colors"
+                            >
+                                Home
+                            </Link>
+
+                            {/* Mobile Services Submenu */}
+                            <div className="flex flex-col items-center gap-3">
+                                <span className="text-gray-500 text-sm uppercase tracking-widest">Diensten</span>
+                                {serviceLinks.map((link) => (
                                     <Link
+                                        key={link.href}
                                         href={link.href}
-                                        onClick={(e) => handleSmoothScroll(e, link.href)}
-                                        className="text-white text-4xl font-bold tracking-tight hover:text-purple-500 transition-colors"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="text-white text-xl font-medium hover:text-purple-500 transition-colors"
                                     >
                                         {link.label}
                                     </Link>
-                                </motion.div>
+                                ))}
+                            </div>
+
+                            {navLinks.filter(l => l.label !== 'Home').map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    onClick={(e) => handleSmoothScroll(e, link.href)}
+                                    className="text-white text-3xl font-bold tracking-tight hover:text-purple-500 transition-colors"
+                                >
+                                    {link.label}
+                                </Link>
                             ))}
+
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -177,11 +247,12 @@ export default function Navbar() {
                                 >
                                     <Link
                                         href="/contact"
-                                        className="mt-8 px-10 py-4 rounded-full font-bold text-lg text-white inline-block"
+                                        className="mt-4 px-10 py-4 rounded-full font-bold text-lg text-white inline-block"
                                         style={{
                                             background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)',
                                             boxShadow: '0 10px 30px -10px rgba(132, 110, 247, 0.5)'
                                         }}
+                                        onClick={() => setIsMobileMenuOpen(false)}
                                     >
                                         Boek een call
                                     </Link>
