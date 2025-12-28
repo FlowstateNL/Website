@@ -19,6 +19,7 @@ export interface BlogPost {
     category: string;
     coverImage?: string;
     contentHtml?: string;
+    toc?: { id: string; text: string }[];
 }
 
 export function getAllPosts(): BlogPost[] {
@@ -77,10 +78,19 @@ export async function getPostData(slug: string): Promise<BlogPost> {
         .process(matterResult.content);
     const contentHtml = processedContent.toString();
 
+    // Extract H2 headings reliably from the generated HTML
+    const toc: { id: string; text: string }[] = [];
+    const h2Regex = /<h2[^>]*id=["']([^"']+)["'][^>]*>(.*?)<\/h2>/g;
+    let match;
+    while ((match = h2Regex.exec(contentHtml)) !== null) {
+        toc.push({ id: match[1], text: match[2] });
+    }
+
     // Combine the data with the slug and contentHtml
     return {
         slug,
         contentHtml,
+        toc,
         title: matterResult.data.title,
         date: matterResult.data.date,
         excerpt: matterResult.data.excerpt,

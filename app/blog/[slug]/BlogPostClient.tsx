@@ -11,12 +11,8 @@ interface BlogPostClientProps {
         category: string;
         contentHtml?: string;
         excerpt: string;
+        toc?: { id: string; text: string }[];
     };
-}
-
-interface TocItem {
-    id: string;
-    text: string;
 }
 
 const containerVariants = {
@@ -48,22 +44,11 @@ const itemVariants = {
 };
 
 export default function BlogPostClient({ post }: BlogPostClientProps) {
-    const [toc, setToc] = useState<TocItem[]>([]);
     const [activeId, setActiveId] = useState<string>('');
+    // Use the TOC provided by the server, or default to empty
+    const toc = post.toc || [];
 
     useEffect(() => {
-        // Extract H2 headings for TOC
-        if (post.contentHtml) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(post.contentHtml, 'text/html');
-            const h2s = Array.from(doc.querySelectorAll('h2'));
-            const items = h2s.map((h2) => ({
-                id: h2.id,
-                text: h2.textContent || '',
-            })).filter(item => item.id);
-            setToc(items);
-        }
-
         // Active heading detection
         const observer = new IntersectionObserver(
             (entries) => {
@@ -82,7 +67,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
         return () => {
             headings.forEach((heading) => observer.unobserve(heading));
         };
-    }, [post.contentHtml]);
+    }, []);
 
     return (
         <motion.div
