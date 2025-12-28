@@ -18,9 +18,9 @@ const generateStars = () => Array.from({ length: 50 }, (_, i) => ({
 const heroItemVariants = {
     hidden: {
         opacity: 0,
-        y: 40,
-        filter: 'blur(15px)',
-        scale: 0.95
+        y: 30,
+        filter: 'blur(10px)',
+        scale: 0.98
     },
     visible: {
         opacity: 1,
@@ -28,20 +28,20 @@ const heroItemVariants = {
         filter: 'blur(0px)',
         scale: 1,
         transition: {
-            duration: 1.2,
-            ease: [0.16, 1, 0.3, 1] as const, // Extra smooth boutique easing
+            duration: 0.8,
+            ease: [0.23, 1, 0.32, 1] as const, // The exact Framer curve
         },
     },
 };
 
-// Container with deliberate unboxing stagger
+// Snappy Framer-style unboxing
 const heroContainerVariants = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.6,
-            delayChildren: 1.5,
+            staggerChildren: 0.1,
+            delayChildren: 0.3,
         },
     },
 };
@@ -72,7 +72,7 @@ export default function HeroSection() {
     useEffect(() => {
         setStars(generateStars());
         // Small delay to simulate Framer's loader feel
-        const timer = setTimeout(() => setIsLoaded(true), 600);
+        const timer = setTimeout(() => setIsLoaded(true), 300);
         return () => clearTimeout(timer);
     }, []);
 
@@ -250,7 +250,7 @@ export default function HeroSection() {
                 className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
                 initial={{ opacity: 0, y: 20 }}
                 animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                transition={{ delay: 5.0, duration: 1.0 }}
+                transition={{ delay: 1.5, duration: 0.6 }}
             >
                 <motion.div
                     className="w-6 h-10 rounded-full flex justify-center pt-2 cursor-pointer"

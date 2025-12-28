@@ -159,7 +159,7 @@ const containerVariants = {
     visible: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.4,
+            staggerChildren: 0.15,
         },
     },
 };
@@ -175,8 +175,8 @@ const cardVariants = {
         y: 0,
         filter: 'blur(0px)',
         transition: {
-            duration: 1.0,
-            ease: [0.16, 1, 0.3, 1] as const,
+            duration: 0.6,
+            ease: [0.23, 1, 0.32, 1] as const,
         },
     },
 };
