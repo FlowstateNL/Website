@@ -92,36 +92,30 @@ export async function getPostData(slug: string): Promise<BlogPost> {
 
     const fullHtml = processedContent.toString();
 
-    // Split content into blocks based on H2 tags using Cheerio
-    const $ = cheerio.load(fullHtml, { xmlMode: false });
-    // Cheerio.load often wraps in <html><head><body>, for fragment use .load(html, null, false) is deprecated in some versions but generally we check output.
-    // Let's use standard load and extract body.
-
-    const body = $('body');
+    // Use cheerio to split into blocks. 
+    // We wrap in a div to ensure elements are root-level for iteration.
+    const $ = cheerio.load(`<div id="content-root">${fullHtml}</div>`, { xmlMode: false });
+    const root = $('#content-root');
     const blocks: { id: string | null; content: string }[] = [];
 
     let currentBlockParts: string[] = [];
-    let currentId: string | null = null;
+    let currentId: string | null = 'intro'; // First block is usually intro
 
-    // Iterate over root level elements
-    body.contents().each((_, elem) => {
+    root.contents().each((_, elem) => {
         const tagName = $(elem).prop('tagName')?.toLowerCase();
 
         if (tagName === 'h2') {
-            // If we have accumulated content for the previous block, push it
+            // Push old block if it has content
             if (currentBlockParts.length > 0) {
                 blocks.push({
                     id: currentId,
                     content: currentBlockParts.join('')
                 });
             }
-            // Start new block
-            currentBlockParts = [];
-            currentId = $(elem).attr('id') || null;
-            // Add the H2 itself to the new block
-            currentBlockParts.push($.html(elem));
+            // Reset for new block
+            currentId = $(elem).attr('id') || `section-${blocks.length}`;
+            currentBlockParts = [$.html(elem)];
         } else {
-            // Add element to current block
             currentBlockParts.push($.html(elem));
         }
     });
@@ -134,16 +128,17 @@ export async function getPostData(slug: string): Promise<BlogPost> {
         });
     }
 
-    // If no H2s were found, put everything in one block
-    if (blocks.length === 0 && fullHtml.length > 0) {
-        blocks.push({ id: null, content: fullHtml });
-    }
+    // Prepend the Title to the TOC
+    const finalToc = [
+        { id: 'article-title', text: 'Introductie' }, // Always have intro as first TOC item
+        ...toc
+    ];
 
     return {
         slug,
-        contentHtml: fullHtml, // Keep for fallback
+        contentHtml: fullHtml,
         blocks,
-        toc,
+        toc: finalToc,
         title: matterResult.data.title,
         date: matterResult.data.date,
         excerpt: matterResult.data.excerpt,

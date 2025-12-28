@@ -47,16 +47,16 @@ const SectionBlock = ({
 }: {
     id: string | null,
     content: string,
-    onActive: (id: string) => void
+    onActive: (id: string, isVisible: boolean) => void
 }) => {
     const ref = useRef(null);
-    // Determine when this section is "active" for reading
-    // margin: "-10% 0px -50% 0px" means it activates when the top passes 10% down and stays until bottom passes 50% up
-    const isInView = useInView(ref, { margin: "-10% 0px -50% 0px", amount: 0.2 });
+    // Intersection observer for heading highlighting
+    // We use a high threshold and narrow margin to pick the "current" reading section
+    const isInView = useInView(ref, { margin: "-20% 0px -60% 0px" });
 
     useEffect(() => {
-        if (isInView && id) {
-            onActive(id);
+        if (id) {
+            onActive(id, isInView);
         }
     }, [isInView, id, onActive]);
 
@@ -65,7 +65,7 @@ const SectionBlock = ({
             ref={ref}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }} // Trigger animation slightly before element enters
+            viewport={{ once: true, margin: "-100px" }}
             variants={itemVariants}
             className="prose prose-invert prose-lg max-w-none 
                 prose-headings:text-white prose-headings:font-bold
@@ -81,9 +81,31 @@ const SectionBlock = ({
 };
 
 export default function BlogPostClient({ post, relatedPosts }: BlogPostClientProps) {
-    const [activeId, setActiveId] = useState<string>('');
+    const [activeId, setActiveId] = useState<string>('intro');
+    const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
+
     const toc = post.toc || [];
-    const blocks = post.blocks || (post.contentHtml ? [{ id: null, content: post.contentHtml }] : []);
+    const blocks = post.blocks || [];
+
+    // Track all visible sections and pick the first one visible
+    const handleActive = (id: string, isVisible: boolean) => {
+        setVisibleSections(prev => {
+            const next = { ...prev, [id]: isVisible };
+            // Find the highest-up visible section
+            const visibleIds = Object.entries(next)
+                .filter(([_, visible]) => visible)
+                .map(([sectionId]) => sectionId);
+
+            if (visibleIds.length > 0) {
+                // Pick the first one that appears in the TOC order (or just the latest update)
+                // Actually, the simplest way is to pick the one that just became visible
+                if (isVisible) {
+                    setActiveId(id);
+                }
+            }
+            return next;
+        });
+    };
 
     return (
         <motion.div
@@ -104,7 +126,7 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                         </Link>
                     </motion.div>
 
-                    <motion.div variants={itemVariants} className="mb-12">
+                    <motion.div variants={itemVariants} className="mb-12" id="article-title">
                         <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
                             <span className="text-purple-500 font-medium">{post.category}</span>
                             <span>•</span>
@@ -122,7 +144,7 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                                 key={index}
                                 id={block.id}
                                 content={block.content}
-                                onActive={setActiveId}
+                                onActive={handleActive}
                             />
                         ))}
                     </div>
@@ -178,25 +200,30 @@ export default function BlogPostClient({ post, relatedPosts }: BlogPostClientPro
                     >
                         <h4 className="text-white font-bold mb-4 text-xs uppercase tracking-[0.15em] opacity-40">Inhoudsopgave</h4>
                         <nav className="space-y-4">
-                            {toc.map((item) => (
-                                <motion.a
-                                    key={item.id}
-                                    href={`#${item.id}`}
-                                    className={`flex items-start gap-4 text-sm transition-all duration-500 group ${activeId === item.id
-                                        ? 'text-purple-400 font-semibold'
-                                        : 'text-gray-500 hover:text-gray-300'
-                                        }`}
-                                    whileHover={{ x: 4 }}
-                                >
-                                    <div className="relative mt-2 shrink-0">
-                                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${activeId === item.id ? 'bg-purple-500 scale-125 shadow-[0_0_10px_rgba(132,110,247,0.8)]' : 'bg-white/10 group-hover:bg-white/30'
-                                            }`} />
-                                    </div>
-                                    <span className={`leading-snug transition-all duration-500`}>
-                                        {item.text}
-                                    </span>
-                                </motion.a>
-                            ))}
+                            {toc.map((item) => {
+                                // Match the TOC id (e.g. 'article-title') with the activeId or block ID ('intro')
+                                const isActive = activeId === item.id || (item.id === 'article-title' && activeId === 'intro');
+
+                                return (
+                                    <motion.a
+                                        key={item.id}
+                                        href={`#${item.id}`}
+                                        className={`flex items-start gap-4 text-sm transition-all duration-500 group ${isActive
+                                            ? 'text-purple-400 font-semibold'
+                                            : 'text-gray-500 hover:text-gray-300'
+                                            }`}
+                                        whileHover={{ x: 4 }}
+                                    >
+                                        <div className="relative mt-2 shrink-0">
+                                            <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${isActive ? 'bg-purple-500 scale-125 shadow-[0_0_10px_rgba(132,110,247,0.8)]' : 'bg-white/10 group-hover:bg-white/30'
+                                                }`} />
+                                        </div>
+                                        <span className={`leading-snug transition-all duration-500`}>
+                                            {item.text}
+                                        </span>
+                                    </motion.a>
+                                );
+                            })}
                         </nav>
 
                         <div className="mt-10 pt-6 border-t border-white/5">
