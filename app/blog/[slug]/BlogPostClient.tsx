@@ -2,7 +2,7 @@
 
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface BlogPostClientProps {
     post: {
@@ -50,13 +50,12 @@ const SectionBlock = ({
     onActive: (id: string, isVisible: boolean) => void
 }) => {
     const ref = useRef(null);
-    // Intersection observer for heading highlighting
-    // We use a high threshold and narrow margin to pick the "current" reading section
-    const isInView = useInView(ref, { margin: "-20% 0px -60% 0px" });
+    // Use a tighter margin for heading activation to prevent multiple sections triggering at once
+    const isInView = useInView(ref, { margin: "-30% 0px -40% 0px" });
 
     useEffect(() => {
-        if (id) {
-            onActive(id, isInView);
+        if (id && isInView) {
+            onActive(id, true);
         }
     }, [isInView, id, onActive]);
 
@@ -82,30 +81,16 @@ const SectionBlock = ({
 
 export default function BlogPostClient({ post, relatedPosts }: BlogPostClientProps) {
     const [activeId, setActiveId] = useState<string>('intro');
-    const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
 
     const toc = post.toc || [];
     const blocks = post.blocks || [];
 
-    // Track all visible sections and pick the first one visible
-    const handleActive = (id: string, isVisible: boolean) => {
-        setVisibleSections(prev => {
-            const next = { ...prev, [id]: isVisible };
-            // Find the highest-up visible section
-            const visibleIds = Object.entries(next)
-                .filter(([_, visible]) => visible)
-                .map(([sectionId]) => sectionId);
-
-            if (visibleIds.length > 0) {
-                // Pick the first one that appears in the TOC order (or just the latest update)
-                // Actually, the simplest way is to pick the one that just became visible
-                if (isVisible) {
-                    setActiveId(id);
-                }
-            }
-            return next;
-        });
-    };
+    // Use useCallback to prevent infinite loop of re-renders
+    const handleActive = useCallback((id: string, isVisible: boolean) => {
+        if (isVisible) {
+            setActiveId(id);
+        }
+    }, []);
 
     return (
         <motion.div

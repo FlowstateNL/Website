@@ -90,7 +90,11 @@ export async function getPostData(slug: string): Promise<BlogPost> {
         .use(rehypeStringify)
         .process(matterResult.content);
 
-    const fullHtml = processedContent.toString();
+    let fullHtml = processedContent.toString();
+
+    // Cleanup: Remove hardcoded light backgrounds from infographics that conflict with dark mode
+    fullHtml = fullHtml.replace(/background-color:\s*#f9f9f9;?/gi, '');
+    fullHtml = fullHtml.replace(/background:\s*#f9f9f9;?/gi, '');
 
     // Use cheerio to split into blocks. 
     // We wrap in a div to ensure elements are root-level for iteration.
