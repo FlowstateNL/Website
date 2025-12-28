@@ -76,7 +76,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
             animate="visible"
             className="max-w-7xl mx-auto px-4"
         >
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr,280px] gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12 items-start">
                 {/* Main Content */}
                 <div className="max-w-3xl">
                     <motion.div variants={itemVariants}>
@@ -132,39 +132,37 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
                 </div>
 
                 {/* Table of Contents (Desktop only) */}
-                <aside className="hidden lg:block">
-                    <div className="sticky top-40">
-                        <motion.div
-                            variants={itemVariants}
-                            className="bg-white/5 border border-white/10 rounded-3xl p-6"
-                        >
-                            <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Inhoudstafel</h4>
-                            <nav className="space-y-3">
-                                {toc.map((item) => (
-                                    <motion.a
-                                        key={item.id}
-                                        href={`#${item.id}`}
-                                        className={`block text-sm transition-all duration-300 ${activeId === item.id
-                                            ? 'text-purple-400 font-semibold'
-                                            : 'text-gray-500 hover:text-gray-300'
-                                            }`}
-                                        whileHover={{ x: 5 }}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <div className={`w-1 h-1 rounded-full transition-all ${activeId === item.id ? 'bg-purple-400 scale-150' : 'bg-transparent'
-                                                }`} />
-                                            {item.text}
-                                        </div>
-                                    </motion.a>
-                                ))}
-                            </nav>
+                <aside className="hidden lg:block sticky top-32 self-start">
+                    <motion.div
+                        variants={itemVariants}
+                        className="bg-white/5 border border-white/10 rounded-3xl p-6"
+                    >
+                        <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Inhoudsopgave</h4>
+                        <nav className="space-y-3">
+                            {toc.map((item) => (
+                                <motion.a
+                                    key={item.id}
+                                    href={`#${item.id}`}
+                                    className={`block text-sm transition-all duration-300 ${activeId === item.id
+                                        ? 'text-purple-400 font-semibold'
+                                        : 'text-gray-500 hover:text-gray-300'
+                                        }`}
+                                    whileHover={{ x: 5 }}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-1 h-1 rounded-full transition-all ${activeId === item.id ? 'bg-purple-400 scale-150' : 'bg-transparent'
+                                            }`} />
+                                        {item.text}
+                                    </div>
+                                </motion.a>
+                            ))}
+                        </nav>
 
-                            {/* Social Proof / Tiny Call to Action in TOC */}
-                            <div className="mt-10 pt-6 border-t border-white/5">
-                                <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-2 italic">Aangedreven door Flowstate AI</p>
-                            </div>
-                        </motion.div>
-                    </div>
+                        {/* Social Proof / Tiny Call to Action in TOC */}
+                        <div className="mt-10 pt-6 border-t border-white/5">
+                            <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-2 italic">Aangedreven door Flowstate AI</p>
+                        </div>
+                    </motion.div>
                 </aside>
             </div>
         </motion.div>

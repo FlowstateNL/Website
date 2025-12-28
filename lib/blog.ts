@@ -1,13 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { remark } from 'remark';
-import html from 'remark-html';
-import rehypeSlug from 'rehype-slug';
-import rehypeStringify from 'rehype-stringify';
-import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import rehypeSlug from 'rehype-slug';
+import rehypeStringify from 'rehype-stringify';
+import { visit } from 'unist-util-visit';
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
@@ -23,7 +22,6 @@ export interface BlogPost {
 }
 
 export function getAllPosts(): BlogPost[] {
-    // Get file names under /content/blog
     if (!fs.existsSync(postsDirectory)) {
         return [];
     }
@@ -37,7 +35,6 @@ export function getAllPosts(): BlogPost[] {
             const fileContents = fs.readFileSync(fullPath, 'utf8');
             const matterResult = matter(fileContents);
 
-            // Extract first image URL if present in content
             const imageMatch = matterResult.content.match(/!\[.*?\]\((.*?)\)/);
             const coverImage = imageMatch ? imageMatch[1] : undefined;
 
@@ -52,61 +49,45 @@ export function getAllPosts(): BlogPost[] {
             } as BlogPost;
         });
 
-    // Sort posts by date
-    return allPostsData.sort((a, b) => {
-        if (a.date < b.date) {
-            return 1;
-        } else {
-            return -1;
-        }
-    });
+    return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
-
-import { visit } from 'unist-util-visit';
-
-// ... imports
 
 export async function getPostData(slug: string): Promise<BlogPost> {
     const fullPath = path.join(postsDirectory, `${slug}.md`);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
-
-    // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
 
     const toc: { id: string; text: string }[] = [];
 
-    // Custom plugin to extract TOC from HAST
+    // Plugin to extract TOC from HAST
     const extractToc = () => {
         return (tree: any) => {
             visit(tree, 'element', (node: any) => {
-                if (node.tagName === 'h2' && node.properties && node.properties.id) {
-                    // Get text content recursively
-                    const getText = (n: any): string => {
-                        if (n.type === 'text') return n.value;
-                        if (n.children) return n.children.map(getText).join('');
-                        return '';
-                    };
-
-                    toc.push({
-                        id: node.properties.id,
-                        text: getText(node)
-                    });
+                if (node.tagName === 'h2') {
+                    const id = node.properties?.id;
+                    if (id) {
+                        const getText = (n: any): string => {
+                            if (n.type === 'text') return n.value;
+                            if (n.children) return n.children.map(getText).join('');
+                            return '';
+                        };
+                        toc.push({ id, text: getText(node) });
+                    }
                 }
             });
         };
     };
 
-    // Use unified/remark/rehype to convert markdown into HTML with IDs
     const processedContent = await unified()
         .use(remarkParse)
         .use(remarkRehype)
         .use(rehypeSlug)
-        .use(extractToc) // Capture TOC after IDs are assigned
+        .use(extractToc)
         .use(rehypeStringify)
         .process(matterResult.content);
+
     const contentHtml = processedContent.toString();
 
-    // Combine the data with the slug and contentHtml
     return {
         slug,
         contentHtml,
