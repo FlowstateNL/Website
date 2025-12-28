@@ -14,52 +14,58 @@ const generateStars = () => Array.from({ length: 50 }, (_, i) => ({
     delay: Math.random() * 3,
 }));
 
-// Framer-style animation - blur to clear with slide up
-const heroItemVariants = {
+// The exact Framer animation - per word, blur to clear with slide up
+const wordVariants = {
     hidden: {
         opacity: 0,
-        y: 30,
+        y: 40,
         filter: 'blur(10px)',
-        scale: 0.98
     },
     visible: {
         opacity: 1,
         y: 0,
         filter: 'blur(0px)',
-        scale: 1,
         transition: {
             duration: 0.8,
-            ease: [0.23, 1, 0.32, 1] as const, // The exact Framer curve
+            ease: [0.23, 1, 0.32, 1] as const,
         },
     },
 };
 
-// Snappy Framer-style unboxing
+const heroItemVariants = {
+    hidden: {
+        opacity: 0,
+        y: 20,
+        filter: 'blur(10px)',
+    },
+    visible: {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        transition: {
+            duration: 0.8,
+            ease: [0.23, 1, 0.32, 1] as const,
+        },
+    },
+};
+
 const heroContainerVariants = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.3,
+            staggerChildren: 0.12,
+            delayChildren: 0.2,
         },
     },
 };
 
-// Button variants with scale
-const buttonVariants = {
-    hidden: {
-        opacity: 0,
-        y: 20,
-        scale: 0.95
-    },
+const wordContainerVariants = {
+    hidden: { opacity: 0 },
     visible: {
         opacity: 1,
-        y: 0,
-        scale: 1,
         transition: {
-            duration: 0.6,
-            ease: [0.23, 1, 0.32, 1] as const,
+            staggerChildren: 0.08,
         },
     },
 };
@@ -71,8 +77,7 @@ export default function HeroSection() {
 
     useEffect(() => {
         setStars(generateStars());
-        // Small delay to simulate Framer's loader feel
-        const timer = setTimeout(() => setIsLoaded(true), 300);
+        const timer = setTimeout(() => setIsLoaded(true), 100);
         return () => clearTimeout(timer);
     }, []);
 
@@ -83,6 +88,9 @@ export default function HeroSection() {
 
     const nebulaY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
     const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '10%']);
+
+    const titleLine1 = "Niet harder werken,";
+    const titleLine2 = "maar slimmer groeien";
 
     return (
         <section
@@ -137,15 +145,6 @@ export default function HeroSection() {
                         filter: 'blur(80px)',
                     }}
                 />
-                <div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                    style={{
-                        width: '1400px',
-                        height: '1000px',
-                        background: 'radial-gradient(ellipse at center, transparent 50%, rgba(59, 130, 246, 0.1) 80%, transparent 100%)',
-                        filter: 'blur(40px)',
-                    }}
-                />
             </motion.div>
 
             {/* Dark vignette edges */}
@@ -178,20 +177,42 @@ export default function HeroSection() {
                         <span className="text-sm text-[#9CA3AF]">Beschikbaar in Groningen</span>
                     </motion.div>
 
-                    {/* Main Title - Single block with Framer blur animation */}
-                    <motion.h1
-                        variants={heroItemVariants}
-                        className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-[1.1] tracking-tight mb-8"
-                        style={{ color: '#fff' }}
-                    >
-                        <span className="block">Niet harder werken,</span>
-                        <span className="block">
-                            maar{' '}
-                            <span className="italic bg-gradient-to-r from-[#846ef7] via-[#a594f9] to-[#846ef7] bg-clip-text text-transparent pr-1">
-                                slimmer groeien
+                    {/* Main Title - Word by Word Stagger */}
+                    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-[1.1] tracking-tight mb-8">
+                        <motion.div variants={wordContainerVariants} className="block overflow-hidden pb-2">
+                            {titleLine1.split(' ').map((word, i) => (
+                                <motion.span
+                                    key={i}
+                                    variants={wordVariants}
+                                    className="inline-block mr-[0.25em] last:mr-0 text-white"
+                                >
+                                    {word}
+                                </motion.span>
+                            ))}
+                        </motion.div>
+                        <motion.div variants={wordContainerVariants} className="block overflow-hidden">
+                            {"maar ".split(' ').map((word, i) => (
+                                <motion.span
+                                    key={`maar-${i}`}
+                                    variants={wordVariants}
+                                    className="inline-block mr-[0.25em] text-white"
+                                >
+                                    {word}
+                                </motion.span>
+                            ))}
+                            <span className="italic bg-gradient-to-r from-[#846ef7] via-[#a594f9] to-[#846ef7] bg-clip-text text-transparent pr-1 inline-flex">
+                                {"slimmer groeien".split(' ').map((word, i) => (
+                                    <motion.span
+                                        key={i}
+                                        variants={wordVariants}
+                                        className="inline-block mr-[0.25em] last:mr-0"
+                                    >
+                                        {word}
+                                    </motion.span>
+                                ))}
                             </span>
-                        </span>
-                    </motion.h1>
+                        </motion.div>
+                    </h1>
 
                     {/* Subtitle */}
                     <motion.p
@@ -199,7 +220,7 @@ export default function HeroSection() {
                         className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12"
                         style={{ color: '#9CA3AF' }}
                     >
-                        In een snel veranderende wereld wint degene die vooruitkijkt. Wij transformeren jouw tijdrovende processen in een gestroomlijnde motor voor succes, zodat jij je kunt richten op wat écht telt: ondernemen met passie.
+                        In een snel veranderende wereld wint degene die vooruitkijkt. Wij transformeren jouw tijdrovende processen in een gestroomlijnde motor voor succes.
                     </motion.p>
 
                     {/* CTA Buttons */}
@@ -250,12 +271,11 @@ export default function HeroSection() {
                 className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
                 initial={{ opacity: 0, y: 20 }}
                 animate={isLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                transition={{ delay: 1.5, duration: 0.6 }}
+                transition={{ delay: 1.2, duration: 0.6 }}
             >
-                <motion.div
+                <div
                     className="w-6 h-10 rounded-full flex justify-center pt-2 cursor-pointer"
                     style={{ border: '2px solid rgba(255,255,255,0.2)' }}
-                    whileHover={{ borderColor: 'rgba(132, 110, 247, 0.5)' }}
                     onClick={() => {
                         document.getElementById('diensten')?.scrollIntoView({ behavior: 'smooth' });
                     }}
@@ -265,7 +285,7 @@ export default function HeroSection() {
                         animate={{ y: [0, 16, 0] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     />
-                </motion.div>
+                </div>
             </motion.div>
         </section>
     );
