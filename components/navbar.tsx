@@ -41,12 +41,23 @@ export default function Navbar() {
     }, []);
 
     const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-        if (href.startsWith('#') || href.startsWith('/#')) {
-            // e.preventDefault(); // Let Next.js handle routing, but smooth scroll if on same page
-            // Not strictly preventing default here to allow cross-page anchor linking
-            setIsMobileMenuOpen(false);
-        } else {
-            setIsMobileMenuOpen(false);
+        // Close menu/dropdown first
+        setIsMobileMenuOpen(false);
+        setIsDropdownOpen(false);
+
+        const isAnchor = href.startsWith('#') || href.startsWith('/#');
+        if (isAnchor) {
+            const targetId = href.split('#')[1];
+            const pathname = window.location.pathname;
+
+            // If we are on the page the anchor belongs to (usually home '/')
+            if (pathname === '/' || href.startsWith(pathname)) {
+                const element = document.getElementById(targetId);
+                if (element) {
+                    e.preventDefault();
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
         }
     };
 
@@ -56,7 +67,7 @@ export default function Navbar() {
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
-                className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+                className="fixed top-0 left-0 right-0 z-[100] transition-all duration-300"
                 style={{
                     backgroundColor: isScrolled ? 'rgba(0, 0, 0, 0.8)' : 'transparent',
                     backdropFilter: isScrolled ? 'blur(20px)' : 'none',
@@ -66,7 +77,7 @@ export default function Navbar() {
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex items-center justify-between">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center gap-3 group">
+                        <Link href="/" className="flex items-center gap-3 group" onClick={() => setIsMobileMenuOpen(false)}>
                             <motion.img
                                 src="/logo.png"
                                 alt="Flowstate Logo"
@@ -80,8 +91,21 @@ export default function Navbar() {
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center gap-8">
                             <motion.div whileHover="hover">
-                                <Link href="/" className="text-sm font-medium text-gray-400 hover:text-white transition-colors relative">
-                                    Home
+                                <Link
+                                    href="/"
+                                    className="text-sm font-medium transition-colors relative"
+                                    style={{ color: '#9CA3AF' }}
+                                    onClick={(e) => handleSmoothScroll(e, '/')}
+                                >
+                                    <motion.span variants={linkVariants} className="relative">
+                                        Home
+                                        <motion.span
+                                            className="absolute -bottom-1 left-0 h-0.5 bg-purple-500"
+                                            initial={{ width: 0 }}
+                                            whileHover={{ width: '100%' }}
+                                            transition={{ duration: 0.2 }}
+                                        />
+                                    </motion.span>
                                 </Link>
                             </motion.div>
 
@@ -105,13 +129,14 @@ export default function Navbar() {
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
                                             transition={{ duration: 0.2 }}
-                                            className="absolute top-full left-0 mt-2 w-56 rounded-xl overflow-hidden border border-white/10 backdrop-blur-xl bg-black/90 shadow-2xl"
+                                            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 rounded-xl overflow-hidden border border-white/10 backdrop-blur-xl bg-black/90 shadow-2xl"
                                         >
                                             <div className="py-2">
                                                 {serviceLinks.map((link) => (
                                                     <Link
                                                         key={link.href}
                                                         href={link.href}
+                                                        onClick={() => setIsDropdownOpen(false)}
                                                         className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                                                     >
                                                         {link.label}
@@ -157,7 +182,7 @@ export default function Navbar() {
                             >
                                 <Link
                                     href="/contact"
-                                    className="px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all duration-300"
+                                    className="px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all duration-300 flex items-center gap-2"
                                     style={{
                                         background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)',
                                         boxShadow: '0 0 20px rgba(132, 110, 247, 0.3)',
@@ -171,7 +196,7 @@ export default function Navbar() {
                         {/* Mobile Menu Button */}
                         <motion.button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="md:hidden text-white p-2"
+                            className="md:hidden text-white p-2 relative z-[110]"
                             aria-label="Toggle menu"
                             whileTap={{ scale: 0.9 }}
                         >
@@ -191,70 +216,63 @@ export default function Navbar() {
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: '-100%' }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: '-100%' }}
+                        initial={{ opacity: 0, x: '100%' }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: '100%' }}
                         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                        className="fixed inset-0 z-40 flex flex-col items-center justify-center md:hidden overflow-y-auto"
+                        className="fixed inset-0 z-[105] flex flex-col md:hidden overflow-y-auto"
                         style={{ backgroundColor: '#000' }}
                     >
-                        <div className="flex flex-col items-center gap-6 py-8">
+                        <div className="flex flex-col items-center gap-8 pt-32 pb-16 px-6">
                             <Link
                                 href="/"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-white text-3xl font-bold tracking-tight hover:text-purple-500 transition-colors"
+                                onClick={(e) => handleSmoothScroll(e, '/')}
+                                className="text-white text-4xl font-bold tracking-tight hover:text-purple-500 transition-colors"
                             >
                                 Home
                             </Link>
 
                             {/* Mobile Services Submenu */}
-                            <div className="flex flex-col items-center gap-3">
-                                <span className="text-gray-500 text-sm uppercase tracking-widest">Diensten</span>
-                                {serviceLinks.map((link) => (
-                                    <Link
-                                        key={link.href}
-                                        href={link.href}
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                        className="text-white text-xl font-medium hover:text-purple-500 transition-colors"
-                                    >
-                                        {link.label}
-                                    </Link>
-                                ))}
+                            <div className="flex flex-col items-center gap-4 w-full">
+                                <span className="text-gray-500 text-xs uppercase tracking-widest font-bold">Diensten</span>
+                                <div className="flex flex-col items-center gap-4">
+                                    {serviceLinks.map((link) => (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="text-white text-2xl font-medium hover:text-purple-400 transition-colors"
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
+
+                            <hr className="w-12 border-white/10" />
 
                             {navLinks.filter(l => l.label !== 'Home').map((link) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
                                     onClick={(e) => handleSmoothScroll(e, link.href)}
-                                    className="text-white text-3xl font-bold tracking-tight hover:text-purple-500 transition-colors"
+                                    className="text-white text-4xl font-bold tracking-tight hover:text-purple-500 transition-colors"
                                 >
                                     {link.label}
                                 </Link>
                             ))}
 
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5, duration: 0.4 }}
+                            <Link
+                                href="/contact"
+                                className="mt-8 px-10 py-4 rounded-full font-bold text-lg text-white inline-block text-center"
+                                style={{
+                                    background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)',
+                                    boxShadow: '0 10px 30px -10px rgba(132, 110, 247, 0.5)'
+                                }}
+                                onClick={() => setIsMobileMenuOpen(false)}
                             >
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    <Link
-                                        href="/contact"
-                                        className="mt-4 px-10 py-4 rounded-full font-bold text-lg text-white inline-block"
-                                        style={{
-                                            background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)',
-                                            boxShadow: '0 10px 30px -10px rgba(132, 110, 247, 0.5)'
-                                        }}
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                    >
-                                        Boek een call
-                                    </Link>
-                                </motion.div>
-                            </motion.div>
+                                Boek een call
+                            </Link>
                         </div>
                     </motion.div>
                 )}

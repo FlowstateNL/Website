@@ -5,10 +5,10 @@ import { motion } from 'framer-motion';
 
 const footerLinks = {
     diensten: [
-        { label: 'SEO Blog Creator', href: '#diensten' },
-        { label: 'Offerte Automations', href: '#diensten' },
-        { label: 'Klantenservice AI', href: '#diensten' },
-        { label: 'Maatwerk AI', href: '#diensten' },
+        { label: 'SEO Blog Creator', href: '/#diensten' },
+        { label: 'Offerte Automations', href: '/#diensten' },
+        { label: 'Klantenservice AI', href: '/#diensten' },
+        { label: 'Maatwerk AI', href: '/#diensten' },
     ],
     bedrijf: [
         { label: 'Home', href: '/' },
