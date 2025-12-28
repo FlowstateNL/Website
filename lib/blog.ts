@@ -93,7 +93,7 @@ export async function getPostData(slug: string): Promise<BlogPost> {
     const fullHtml = processedContent.toString();
 
     // Split content into blocks based on H2 tags using Cheerio
-    const $ = cheerio.load(fullHtml, { xmlMode: false, decodeEntities: false }, false); // Use false as 3rd arg to load body fragment only
+    const $ = cheerio.load(fullHtml, { xmlMode: false });
     // Cheerio.load often wraps in <html><head><body>, for fragment use .load(html, null, false) is deprecated in some versions but generally we check output.
     // Let's use standard load and extract body.
 
