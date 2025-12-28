@@ -12,6 +12,7 @@ export interface BlogPost {
     date: string;
     excerpt: string;
     category: string;
+    coverImage?: string;
     contentHtml?: string;
 }
 
@@ -25,23 +26,22 @@ export function getAllPosts(): BlogPost[] {
     const allPostsData = fileNames
         .filter((fileName) => fileName.endsWith('.md'))
         .map((fileName) => {
-            // Remove ".md" from file name to get slug
             const slug = fileName.replace(/\.md$/, '');
-
-            // Read markdown file as string
             const fullPath = path.join(postsDirectory, fileName);
             const fileContents = fs.readFileSync(fullPath, 'utf8');
-
-            // Use gray-matter to parse the post metadata section
             const matterResult = matter(fileContents);
 
-            // Combine the data with the slug
+            // Extract first image URL if present in content
+            const imageMatch = matterResult.content.match(/!\[.*?\]\((.*?)\)/);
+            const coverImage = imageMatch ? imageMatch[1] : undefined;
+
             return {
                 slug,
                 title: matterResult.data.title,
                 date: matterResult.data.date,
                 excerpt: matterResult.data.excerpt,
                 category: matterResult.data.category || 'AI',
+                coverImage,
                 ...matterResult.data,
             } as BlogPost;
         });
