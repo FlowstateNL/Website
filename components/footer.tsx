@@ -36,13 +36,12 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="md:col-span-2">
                         <Link href="/" className="flex items-center gap-3 mb-4 group">
-                            <motion.div
-                                className="w-9 h-9 rounded-xl flex items-center justify-center"
-                                style={{ background: 'linear-gradient(135deg, #846ef7 0%, #1e0b74 100%)' }}
-                                whileHover={{ scale: 1.1, rotate: 5 }}
-                            >
-                                <span className="text-white font-bold text-sm">F</span>
-                            </motion.div>
+                            <motion.img
+                                src="/logo.png"
+                                alt="Flowstate Logo"
+                                className="w-10 h-10 object-contain"
+                                whileHover={{ scale: 1.1 }}
+                            />
                             <span className="text-white font-semibold text-lg group-hover:text-purple-300 transition-colors">Flowstate</span>
                         </Link>
                         <p className="text-sm leading-relaxed max-w-sm mb-6" style={{ color: '#6B7280' }}>

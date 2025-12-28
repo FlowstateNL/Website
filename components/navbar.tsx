@@ -67,16 +67,13 @@ export default function Navbar() {
                     <div className="flex items-center justify-between">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-3 group">
-                            <motion.div
-                                className="w-9 h-9 rounded-xl flex items-center justify-center"
-                                style={{
-                                    background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)',
-                                }}
-                                whileHover={{ scale: 1.1, rotate: 5 }}
+                            <motion.img
+                                src="/logo.png"
+                                alt="Flowstate Logo"
+                                className="w-10 h-10 object-contain"
+                                whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.95 }}
-                            >
-                                <span className="text-white font-bold text-sm">F</span>
-                            </motion.div>
+                            />
                             <span className="text-white font-semibold text-lg group-hover:text-purple-300 transition-colors">Flowstate</span>
                         </Link>
 
